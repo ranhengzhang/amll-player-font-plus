@@ -1,6 +1,6 @@
 import {atomWithStorage} from "jotai/utils";
 import {atom, useAtom} from "jotai";
-import {useEffect, type FC, PropsWithChildren} from "react";
+import React, {useEffect, type FC, PropsWithChildren} from "react";
 import {Card, Flex, Switch, Text, TextField, TextProps} from "@radix-ui/themes";
 import chalk from "chalk";
 
@@ -136,7 +136,7 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
             styleElement.id = 'orig_height';  // 设置 id
             styleElement.innerHTML = `
 div[class*="_lyricMainLine"] span[style^="mask-image"] {
-    height: 1.25em !important;
+    min-height: 1.25em !important;
 }
             `;
             consoleLog("INFO", "context", "原文行高修复开启。");

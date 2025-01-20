@@ -99,7 +99,7 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
             styleElement.id = 'orig_height';  // 设置 id
             styleElement.innerHTML = `
 div[class*="_lyricMainLine"] span[style^="mask-image"] {
-    height: 1.25em !important;
+    min-height: 1.25em !important;
 }
             `
         }
