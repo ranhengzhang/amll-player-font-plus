@@ -4,23 +4,29 @@ import React, {useEffect, type FC, PropsWithChildren} from "react";
 import {Card, Flex, Switch, Text, TextField, TextProps} from "@radix-ui/themes";
 import chalk from "chalk";
 
-const WARN_TAG = chalk.bgHex("#ee6900").hex("#FFFFFF")(" WARN ");
-const INFO_TAG = chalk.bgHex("#4764e0").hex("#FFFFFF")(" INFO ");
-const NAME_TAG = chalk.bgHex("#36a3c9").hex("#FFFFFF")(" FONT ");
+const WARN_TAG = chalk.bgHex("#de2a18").hex("#FFFFFF")(" WARN ");
+const INFO_TAG = chalk.bgHex("#2376b7").hex("#FFFFFF")(" INFO ");
+const  LOG_TAG = chalk.bgHex("#1ba784").hex("#FFFFFF")(" LOG ");
+const NAME_TAG = chalk.bgHex("#737c7b").hex("#FFFFFF")(" FONT ");
 
-export function consoleLog(type: string, func: string, info: string) {
+function getChalk(bg: string, fg: string, part: string) {
+    return chalk.bgHex(bg).hex(fg)(` ${part} `);
+}
 
+export function consoleLog(type: string, part: string, info: string) {
+
+    const PART_TAG = getChalk("#1a6840", "#FFFFFF", part);
     if (type === "INFO") {
-        console.log(NAME_TAG + INFO_TAG, func + "::" + info)
+        console.log(NAME_TAG + INFO_TAG + PART_TAG, info)
 
     } else if (type === "WARN") {
-        console.log(NAME_TAG + WARN_TAG, func + "::" + info)
+        console.log(NAME_TAG + WARN_TAG + PART_TAG, info)
 
     } else if (type === "LOG") {
-        console.log(NAME_TAG + NAME_TAG, func + "::" + info)
+        console.log(NAME_TAG + LOG_TAG + PART_TAG, info)
 
     } else {
-        console.log(NAME_TAG + WARN_TAG, func + "::" + info)
+        console.log(NAME_TAG + NAME_TAG + PART_TAG, info)
     }
 
 }
@@ -51,14 +57,14 @@ div[class^="_info"] > div[class*="_name"] {
     font-weight: 400 !important;
 }
             `;
-            consoleLog("INFO", "context", "取消粗体标题");
+            consoleLog("LOG", "title", "取消粗体标题");
         } else {
             styleElement.innerHTML = `
 div[class^="_info"] > div[class*="_name"] {
     font-weight: 500 !important;
 }
             `;
-            consoleLog("INFO", "context", "显示粗体标题");
+            consoleLog("LOG", "title", "显示粗体标题");
         }
     }
 
@@ -113,11 +119,11 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
     filter: blur(0px) !important;
 }
                 `;
-                consoleLog("INFO", "context", "还原元数据字体为：" + storedLyricFontFamily);
+                consoleLog("LOG", "meta", "还原元数据字体为：" + storedLyricFontFamily);
             } else {
                 let styleElement = document.getElementById('meta_fonts');
                 if (styleElement) document.head.removeChild(styleElement);
-                consoleLog("INFO", "context", "元数据未启用");
+                consoleLog("LOG", "meta", "元数据未启用");
             }
         }
     }
@@ -139,12 +145,12 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
     min-height: 1.25em !important;
 }
             `;
-            consoleLog("INFO", "context", "原文行高修复开启。");
+            consoleLog("LOG", "orig", "原文行高修复开启。");
         } else {
             if (styleElement) {
                 document.head.removeChild(styleElement);
             }
-            consoleLog("INFO", "context", "原文行高修复关闭。");
+            consoleLog("LOG", "orig", "原文行高修复关闭。");
         }
     }
 

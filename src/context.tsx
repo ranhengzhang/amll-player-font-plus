@@ -24,14 +24,14 @@ div[class^="_info"] > div[class*="_name"] {
     font-weight: 400 !important;
 }
             `;
-                consoleLog("INFO", "context", "取消粗体标题");
+                consoleLog("LOG", "title", "取消粗体标题");
             } else {
                 styleElement.innerHTML = `
 div[class^="_info"] > div[class*="_name"] {
     font-weight: 500 !important;
 }
             `;
-                consoleLog("INFO", "context", "显示粗体标题");
+                consoleLog("LOG", "title", "显示粗体标题");
             }
         }
 
@@ -77,11 +77,11 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
     filter: blur(0px) !important;
 }
                 `;
-                    consoleLog("INFO", "context", "还原元数据字体为：" + storedLyricFontFamily);
+                    consoleLog("LOG", "meta", "还原元数据字体为：" + storedLyricFontFamily);
                 } else {
                     let styleElement = document.getElementById('meta_fonts');
                     if (styleElement) document.head.removeChild(styleElement);
-                    consoleLog("INFO", "context", "元数据未启用");
+                    consoleLog("LOG", "meta", "元数据未启用");
                 }
             }
         }
