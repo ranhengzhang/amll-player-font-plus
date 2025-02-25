@@ -23,6 +23,5 @@ jobs:
       - name: 上传产物到 Action Artifact
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ${{ github.action_repository }}
-          path: |
-            dist/*
+          name: ${{ github.repository }}
+          path: dist/*
