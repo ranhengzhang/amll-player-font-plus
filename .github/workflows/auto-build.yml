@@ -7,6 +7,10 @@ jobs:
     steps:
       - name: 签出代码
         uses: actions/checkout@v3
+      - name: 获取版本号
+        run: VERSION=$(cat package.json | grep '"version":' | sed -e 's/[", ]//g;s/version:,//')
+      - name: 设置版本号
+        run : echo "version=$VERSION" >> "$GITHUB_ENV"
       - name: 安装 PNPM
         uses: pnpm/action-setup@v4.0.0
         with:
@@ -23,5 +27,5 @@ jobs:
       - name: 上传产物到 Action Artifact
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ${{ github.sha }}
+          name: $version
           path: dist/*
