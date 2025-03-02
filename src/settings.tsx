@@ -1,12 +1,13 @@
 import {atomWithStorage} from "jotai/utils";
 import {atom, useAtom} from "jotai";
-import React, {useEffect, type FC, PropsWithChildren} from "react";
-import {Card, Flex, Switch, Text, TextField, TextProps} from "@radix-ui/themes";
+import React, {useEffect, type FC, PropsWithChildren, useState} from "react";
+import {Card, Flex, Separator, Switch, Text, TextField, TextProps} from "@radix-ui/themes";
 import chalk from "chalk";
+import {context} from "esbuild";
 
 const WARN_TAG = chalk.bgHex("#de2a18").hex("#FFFFFF")(" WARN ");
 const INFO_TAG = chalk.bgHex("#2376b7").hex("#FFFFFF")(" INFO ");
-const  LOG_TAG = chalk.bgHex("#1ba784").hex("#FFFFFF")(" LOG ");
+const LOG_TAG = chalk.bgHex("#1ba784").hex("#FFFFFF")(" LOG ");
 const NAME_TAG = chalk.bgHex("#737c7b").hex("#FFFFFF")(" FONT ");
 
 function getChalk(bg: string, fg: string, part: string) {
@@ -38,7 +39,9 @@ export const SettingPage: FC = () => {
     const [amllOrigHeight, setAmllOrigHeight] = useAtom(amllOrigHeightAtom);
     const [amllOrigFonts, setAmllOrigFonts] = useAtom(amllOrigFontsAtom);
     const [amllTsFonts, setAmllTsFonts] = useAtom(amllTsFontsAtom);
+    const [amllTsSize, setAmllTsSize] = useAtom(amllTsSizeAtom);
     const [amllRomaFonts, setAmllRomaFonts] = useAtom(amllRomaFontsAtom);
+    const [amllRomaSize, setAmllRomaSize] = useAtom(amllRomaSizeAtom);
 
     function setAmllBoldTitleFunc(bold: boolean) {
         setAmllBoldTitle(bold);
@@ -56,14 +59,14 @@ export const SettingPage: FC = () => {
 div[class^="_info"] > div[class*="_name"] {
     font-weight: 400 !important;
 }
-            `;
+`;
             consoleLog("LOG", "title", "取消粗体标题");
         } else {
             styleElement.innerHTML = `
 div[class^="_info"] > div[class*="_name"] {
     font-weight: 500 !important;
 }
-            `;
+`;
             consoleLog("LOG", "title", "显示粗体标题");
         }
     }
@@ -90,7 +93,7 @@ div[class^="_info"] > div[class*="_name"] {
 div[class^="_musicInfo"] > div[class^="_info"] {
     font-size: ${size} !important;
 }
-            `;
+`;
                 }
             }, 800);
         };
@@ -118,7 +121,7 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
 div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"]:has(+ div[style*="blur(2px)"]) {
     filter: blur(0px) !important;
 }
-                `;
+`;
                 consoleLog("LOG", "meta", "还原元数据字体为：" + storedLyricFontFamily);
             } else {
                 let styleElement = document.getElementById('meta_fonts');
@@ -144,7 +147,7 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
 div[class*="_lyricMainLine"] span[style^="mask-image"] {
     min-height: 1.25em !important;
 }
-            `;
+`;
             consoleLog("LOG", "orig", "原文行高修复开启。");
         } else {
             if (styleElement) {
@@ -176,24 +179,23 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
 div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div[class*="_lyricSubLine"]:not(:empty)) {
     font-family: ${family}, sans-serif !important;
 }
-            `;
+`;
                 }
             }, 800);
         };
     })();
 
-    let setAmllTsFontsFunc = (() => {
+    let [setAmllTsFontsFunc, setAmllTsSizeFunc] = (() => {
         let ts_timeout = null;
-
-        return (family: string) => {
-            setAmllTsFonts(family);
-
+        let ts_fonts = amllTsFonts;
+        let ts_size = amllTsSize;
+        let set_ts = (log: () => void) => {
             if (ts_timeout) clearTimeout(ts_timeout);
-            ts_timeout = setTimeout(()=>{
-                consoleLog("INFO", "context", "AmllTsFontsAtom: " + family);
-                if (family) {
-                    // 创建一个 <style> 标签，并为其设置 id
-                    let styleElement = document.getElementById('ts_fonts');
+            ts_timeout = setTimeout(() => {
+                log()
+                // 创建一个 <style> 标签，并为其设置 id
+                let styleElement = document.getElementById('ts_fonts');
+                if (ts_fonts || ts_size) {
                     if (!styleElement) {
                         styleElement = document.createElement('style');
                         // 将 <style> 标签添加到 head 中
@@ -202,26 +204,40 @@ div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div
                     styleElement.id = 'ts_fonts';  // 设置 id
                     styleElement.innerHTML = `
 div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
-    font-family: ${family}, sans-serif !important;
+    ${ts_fonts ? `font-family: ${ts_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
+    ${ts_size ? `font-size: ${ts_size} !important;` : "/* No Size Info */"}
 }
-            `;
+`;
+                } else {
+                    if (styleElement) {
+                        document.head.removeChild(styleElement);
+                    }
                 }
             }, 800);
-        };
+        }
+
+        return [(family: string) => {
+            setAmllTsFonts(family);
+            ts_fonts = family;
+            set_ts(() => consoleLog("INFO", "context", "AmllTsFontsAtom: " + ts_fonts));
+        }, (size: string) => {
+            setAmllTsSize(size);
+            ts_size = size;
+            set_ts(() => consoleLog("INFO", "context", "AmllTsSizeAtom: " + ts_size));
+        }];
     })();
 
-    let setAmllRomaFontsFunc = (() => {
+    let [setAmllRomaFontsFunc, setAmllRomaSizeFunc] = (() => {
         let roma_timeout = null;
-
-        return (family: string) => {
-            setAmllRomaFonts(family);
-
+        let roma_fonts = amllRomaFonts;
+        let roma_size = amllRomaSize;
+        let set_roma = (log: () => void) => {
             if (roma_timeout) clearTimeout(roma_timeout);
             roma_timeout = setTimeout(() => {
-                consoleLog("INFO", "context", "AmllRomaFontsAtom: " + family);
-                if (family) {
-                    // 创建一个 <style> 标签，并为其设置 id
-                    let styleElement = document.getElementById('roma_fonts');
+                log();
+                // 创建一个 <style> 标签，并为其设置 id
+                let styleElement = document.getElementById('roma_fonts');
+                if (roma_fonts || roma_size) {
                     if (!styleElement) {
                         styleElement = document.createElement('style');
                         // 将 <style> 标签添加到 head 中
@@ -230,12 +246,27 @@ div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
                     styleElement.id = 'roma_fonts';  // 设置 id
                     styleElement.innerHTML = `
 div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
-    font-family: ${family}, sans-serif !important;
+    ${roma_fonts ? `font-family: ${roma_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
+    ${roma_size ? `font-size: ${roma_size} !important;` : "/* No Size Info */"}
 }
-            `;
+`;
+                } else {
+                    if (styleElement) {
+                        document.head.removeChild(styleElement);
+                    }
                 }
             }, 800);
-        };
+        }
+
+        return [(family: string) => {
+            setAmllRomaFonts(family);
+            roma_fonts = family;
+            set_roma(() => consoleLog("INFO", "context", "AmllRomaFontsAtom: " + roma_fonts));
+        }, (size: string) => {
+            setAmllRomaSize(size);
+            roma_size = size;
+            set_roma(() => consoleLog("INFO", "context", "AmllRomaSizeAtom: " + roma_size));
+        }];
     })();
 
     useEffect(() => {
@@ -243,7 +274,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
     }, []);
 
     // 前置组件
-    const SubTitle: FC<PropsWithChildren<TextProps>> = ({ children, ...props }) => {
+    const SubTitle: FC<PropsWithChildren<TextProps>> = ({children, ...props}) => {
         return (
             <Text weight="bold" size="4" my="4" as="div" {...props}>
                 {children}
@@ -300,33 +331,61 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
                 <Switch checked={amllOrigHeight}
                         onCheckedChange={(e) => setAmllOrigHeightFunc(e)}/>
             </Flex>
+            <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
                     <Text as="div">特殊语言字体</Text>
                 </Flex>
-                <TextField.Root
-                    value={amllOrigFonts}
-                    onChange={(e) => setAmllOrigFontsFunc(e.currentTarget.value)}
-                />
+                <Flex direction="column"  width="60%">
+                    <TextField.Root
+                        value={amllOrigFonts}
+                        onChange={(e) => setAmllOrigFontsFunc(e.currentTarget.value)}
+                    />
+                </Flex>
             </Flex>
+            <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
                     <Text as="div">翻译行字体</Text>
                 </Flex>
+                <Flex direction="column" width="60%">
+                    <TextField.Root
+                        value={amllTsFonts}
+                        onChange={(e) => setAmllTsFontsFunc(e.currentTarget.value)}
+                    />
+                </Flex>
+            </Flex>
+            <Flex>
+                <Flex direction="column" flexGrow="1">
+                    <Text as="div">翻译行字号</Text>
+                </Flex>
                 <TextField.Root
-                value={amllTsFonts}
-                onChange={(e) => setAmllTsFontsFunc(e.currentTarget.value)}
+                    value={amllTsSize}
+                    onChange={(e) => setAmllTsSizeFunc(e.currentTarget.value)}
                 />
             </Flex>
+            <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
-            <Flex direction="column" flexGrow="1">
-                <Text as="div">音译行字体</Text>
+                <Flex direction="column" flexGrow="1">
+                    <Text as="div">音译行字体</Text>
+                </Flex>
+                <Flex direction="column"  width="60%">
+                    <TextField.Root
+                        value={amllRomaFonts}
+                        onChange={(e) => setAmllRomaFontsFunc(e.currentTarget.value)}
+                    />
+                </Flex>
             </Flex>
-            <TextField.Root
-                value={amllRomaFonts}
-                onChange={(e) => setAmllRomaFontsFunc(e.currentTarget.value)}
-            />
-        </Flex>
+            <Flex>
+                <Flex direction="column" flexGrow="1">
+                    <Text as="div">音译行字号</Text>
+                </Flex>
+                <TextField.Root
+                    value={amllRomaSize}
+                    onChange={(e) => setAmllTsSizeFunc(e.currentTarget.value)}
+                />
+            </Flex>
+            <Separator my="3" size="4" />
             <Flex direction="column" align="start" my="2">
                 <Text as="div" className="_lyricMainLine" size="7">
                     <span>012 </span>
@@ -367,11 +426,23 @@ export const amllOrigFontsAtom = atomWithStorage(
     "amllOrigFontsAtom",
     "",
 )
+
 export const amllTsFontsAtom = atomWithStorage(
     "amllTsFontsAtom",
     "",
 )
+
+export const amllTsSizeAtom = atomWithStorage(
+    "amllTsSizeAtom",
+    "",
+)
+
 export const amllRomaFontsAtom = atomWithStorage(
     "amllRomaFontsAtom",
+    "",
+)
+
+export const amllRomaSizeAtom = atomWithStorage(
+    "amllRomaSizeAtom",
     "",
 )

@@ -1,5 +1,10 @@
 name: 自动构建发布
-on: push
+on:
+  push:
+    paths: 
+       - '.github/workflows/**'
+       - 'src/**'
+       - 'package.json'
 
 jobs:
   build-release:

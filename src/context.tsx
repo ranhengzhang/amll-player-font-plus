@@ -1,5 +1,5 @@
 import {useEffect, type FC} from "react";
-import {amllInfoSizeAtom, consoleLog} from "./settings";
+import {consoleLog} from "./settings";
 
 export const ExtensionContext: FC = () => {
     useEffect(() => {
@@ -124,9 +124,12 @@ div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div
         }
 
         const storedAmllTsFontsAtom = localStorage.getItem('amllTsFontsAtom');
+        const storedAmllTsSizeAtom = localStorage.getItem('amllTsSizeAtom');
         consoleLog("INFO", "context", "storedAmllTsFontsAtom: " + storedAmllTsFontsAtom);
-        if (storedAmllTsFontsAtom) {
-            const storedAmllTsFonts = storedAmllTsFontsAtom.replace(/"/g, '');
+        consoleLog("INFO", "context", "storedAmllTsSizeAtom: " + storedAmllTsSizeAtom);
+        if (storedAmllTsFontsAtom || storedAmllTsSizeAtom) {
+            const storedAmllTsFonts = storedAmllTsFontsAtom?.replace(/"/g, '');
+            const storedAmllTsSize = storedAmllTsSizeAtom?.replace(/"/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('ts_fonts');
             if (!styleElement) {
@@ -137,15 +140,19 @@ div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div
             styleElement.id = 'ts_fonts';  // 设置 id
             styleElement.innerHTML = `
 div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
-    font-family: ${storedAmllTsFonts}, sans-serif !important;
+    ${storedAmllTsFonts ? `font-family: ${storedAmllTsFonts}, sans-serif !important;` : ""}
+    ${storedAmllTsSize ? `font-size: ${storedAmllTsSize} !important;` : ""}
 }
             `;
         }
 
         const storedAmllRomaFontsAtom = localStorage.getItem('amllRomaFontsAtom');
+        const storedAmllRomaSizeAtom = localStorage.getItem('amllRomaSizeAtom');
         consoleLog("INFO", "context", "storedAmllRomaFontsAtom: " + storedAmllRomaFontsAtom);
-        if (storedAmllRomaFontsAtom) {
-            const storedAmllRomaFonts = storedAmllRomaFontsAtom.replace(/"/g, '');
+        consoleLog("INFO", "context", "storedAmllRomaSizeAtom: " + storedAmllRomaSizeAtom);
+        if (storedAmllRomaFontsAtom || storedAmllRomaSizeAtom) {
+            const storedAmllRomaFonts = storedAmllRomaFontsAtom?.replace(/"/g, '');
+            const storedAmllRomaSize = storedAmllRomaSizeAtom?.replace(/"/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('roma_fonts');
             if (!styleElement) {
@@ -156,7 +163,8 @@ div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
             styleElement.id = 'roma_fonts';  // 设置 id
             styleElement.innerHTML = `
 div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
-    font-family: ${storedAmllRomaFonts}, sans-serif !important;
+    ${storedAmllRomaFonts ? `font-family: ${storedAmllRomaFonts}, sans-serif !important;` : ""}
+    ${storedAmllRomaSize ? `font-size: ${storedAmllRomaSize} !important;` : ""}
 }
             `;
         }
