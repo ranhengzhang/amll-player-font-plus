@@ -1,6 +1,6 @@
 name: 发布Release
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       logtype:
         type: choice
