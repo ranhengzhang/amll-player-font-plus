@@ -29,6 +29,7 @@ jobs:
       - name: 构建项目
         run: pnpm build
   release-with-link:
+    runs-on: ubuntu-latest
     steps:
       - name: 发布Release
         uses: softprops/action-gh-release@v2
