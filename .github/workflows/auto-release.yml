@@ -1,14 +1,9 @@
 name: 发布Release
 on:
   workflow_dispatch:
-    inputs:
-      changelog:
-        type: string
-        required: true
-        description: 更新日志的获取链接
 
 jobs:
-  build:
+  build-release:
     runs-on: ubuntu-latest
     steps:
       - name: 签出代码
@@ -28,14 +23,7 @@ jobs:
         run: pnpm i
       - name: 构建项目
         run: pnpm build
-  release-with-link:
-    runs-on: ubuntu-latest
-    steps:
       - name: 发布Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Release v${{ env.PACK_VERSION }}
-          tag_name: ${{ env.PACK_VERSION }}
-          token: ${{ secrets.RELEASE_TOKEN }}
-          body_path: ${{ github.event.inputs.changelog }}
-          files: dist/*.js
+        run: gh release create "${{ PACK_VERSION }}" dist/*.js --title "v${{ PACK_VERSION }}" --notes ""
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
