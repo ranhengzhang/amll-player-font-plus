@@ -2,12 +2,6 @@ name: 发布Release
 on:
   workflow_dispatch:
     inputs:
-      logtype:
-        type: choice
-        required: true
-        options:
-          - md-text
-          - raw-link
       changelog:
         type: string
         required: true
@@ -35,7 +29,6 @@ jobs:
       - name: 构建项目
         run: pnpm build
   release-with-link:
-    if: github.event.inputs.logtype == 'raw-link'
     steps:
       - name: 发布Release
         uses: softprops/action-gh-release@v2
@@ -44,15 +37,4 @@ jobs:
           tag_name: ${{ env.PACK_VERSION }}
           token: ${{ secrets.RELEASE_TOKEN }}
           body_path: ${{ github.event.inputs.changelog }}
-          files: dist/*.js
-  release-with-text:
-    if: github.event.inputs.logtype == 'md-text'
-    steps:
-      - name: 发布Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Release v${{ env.PACK_VERSION }}
-          tag_name: ${{ env.PACK_VERSION }}
-          token: ${{ secrets.RELEASE_TOKEN }}
-          body: ${{ github.event.inputs.changelog }}
           files: dist/*.js
