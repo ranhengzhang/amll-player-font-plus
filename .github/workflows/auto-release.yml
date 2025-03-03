@@ -36,20 +36,23 @@ jobs:
         run: pnpm build
   release-with-link:
     if: github.event.inputs.logtype == 'raw-link'
-    uses: softprops/action-gh-release@v2
-    with:
-      name: Release v${{ env.PACK_VERSION }}
-      tag_name: ${{ env.PACK_VERSION }}
-      token: ${{ secrets.RELEASE_TOKEN }}
-      body_path: ${{ github.event.inputs.changelog }}
-      files: dist/*.js
+    steps:
+      - name: 发布Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release v${{ env.PACK_VERSION }}
+          tag_name: ${{ env.PACK_VERSION }}
+          token: ${{ secrets.RELEASE_TOKEN }}
+          body_path: ${{ github.event.inputs.changelog }}
+          files: dist/*.js
   release-with-text:
     if: github.event.inputs.logtype == 'md-text'
-    uses: softprops/action-gh-release@v2
-    with:
-      name: Release v${{ env.PACK_VERSION }}
-      tag_name: ${{ env.PACK_VERSION }}
-      token: ${{ secrets.RELEASE_TOKEN }}
-      body: ${{ github.event.inputs.changelog }}
-      files: dist/*.js
-
+    steps:
+      - name: 发布Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release v${{ env.PACK_VERSION }}
+          tag_name: ${{ env.PACK_VERSION }}
+          token: ${{ secrets.RELEASE_TOKEN }}
+          body: ${{ github.event.inputs.changelog }}
+          files: dist/*.js
