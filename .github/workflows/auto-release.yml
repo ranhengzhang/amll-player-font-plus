@@ -1,0 +1,55 @@
+name: 发布Release
+on:
+  workflow_call:
+    inputs:
+      logtype:
+        type: choice
+        required: true
+        options:
+          - md-text
+          - raw-link
+      changelog:
+        type: string
+        required: true
+        description: 更新日志的获取链接
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 签出代码
+        uses: actions/checkout@v3
+      - name: 设置版本号
+        run: echo "PACK_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+      - name: 安装 PNPM
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          version: latest
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - name: 安装依赖
+        run: pnpm i
+      - name: 构建项目
+        run: pnpm build
+  release-with-link:
+    if: github.event.inputs.logtype == 'raw-link'
+    uses: softprops/action-gh-release@v2
+      with:
+        name: Release v${{ env.PACK_VERSION }}
+        tag_name: ${{ env.PACK_VERSION }}
+        token: ${{ secrets.RELEASE_TOKEN }}
+        body_path: ${{ github.event.inputs.changelog }}
+        files: dist/*.js
+  release-with-text:
+    if: github.event.inputs.logtype == 'md-text'
+    uses: softprops/action-gh-release@v2
+      with:
+        name: Release v${{ env.PACK_VERSION }}
+        tag_name: ${{ env.PACK_VERSION }}
+        token: ${{ secrets.RELEASE_TOKEN }}
+        body: ${{ github.event.inputs.changelog }}
+        files: dist/*.js
+
