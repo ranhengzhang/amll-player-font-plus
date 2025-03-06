@@ -38,6 +38,7 @@ export const SettingPage: FC = () => {
     const [amllMetaMod, setAmllMetaMod] = useAtom(amllMetaModAtom);
     const [amllOrigHeight, setAmllOrigHeight] = useAtom(amllOrigHeightAtom);
     const [amllOrigFonts, setAmllOrigFonts] = useAtom(amllOrigFontsAtom);
+    const [amllSpaceWidth, setAmllSpaceWidth] = useAtom(amllSpaceWidthAtom);
     const [amllTsFonts, setAmllTsFonts] = useAtom(amllTsFontsAtom);
     const [amllTsSize, setAmllTsSize] = useAtom(amllTsSizeAtom);
     const [amllRomaFonts, setAmllRomaFonts] = useAtom(amllRomaFontsAtom);
@@ -157,18 +158,17 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
         }
     }
 
-    let setAmllOrigFontsFunc = (() => {
+    let [setAmllOrigFontsFunc, setAmllSpaceWidthFunc] = (()=>{
         let orig_timeout = null;
-
-        return (family: string) => {
-            setAmllOrigFonts(family);
-
+        let orig_fonts = amllOrigFonts;
+        let space_width = amllSpaceWidth;
+        let set_orig = (log:()=>void)=>{
             if (orig_timeout) clearTimeout(orig_timeout);
-            orig_timeout = setTimeout(() => {
-                consoleLog("INFO", "context", "AmllOrigFontsAtom: " + family);
-                if (family) {
-                    // 创建一个 <style> 标签，并为其设置 id
-                    let styleElement = document.getElementById('orig_fonts');
+            orig_timeout = setTimeout(()=>{
+                log()
+                // 创建一个 <style> 标签，并为其设置 id
+                let styleElement = document.getElementById('orig_fonts');
+                if (orig_fonts || space_width) {
                     if (!styleElement) {
                         styleElement = document.createElement('style');
                         // 将 <style> 标签添加到 head 中
@@ -177,12 +177,27 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
                     styleElement.id = 'orig_fonts';  // 设置 id
                     styleElement.innerHTML = `
 div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div[class*="_lyricSubLine"]:not(:empty)) {
-    font-family: ${family}, sans-serif !important;
+    ${orig_fonts ? `font-family: ${orig_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
+    ${space_width ? `word-spacing: ${space_width} !important;` : "/* No Space Info */"}
 }
 `;
+                } else {
+                    if (styleElement) {
+                        document.head.removeChild(styleElement);
+                    }
                 }
             }, 800);
-        };
+        }
+
+        return [(family: string) =>{
+            setAmllOrigFonts(family);
+            orig_fonts = family;
+            set_orig(()=>consoleLog("INFO", "context", "AmllOrigFontsAtom: " + orig_fonts))
+        }, (width: string)=>{
+            setAmllSpaceWidth(width);
+            space_width = width;
+            set_orig(()=>consoleLog("INFO", "context", "AmllSpaceWidthAtom: " + space_width));
+        }];
     })();
 
     let [setAmllTsFontsFunc, setAmllTsSizeFunc] = (() => {
@@ -343,6 +358,15 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
                     />
                 </Flex>
             </Flex>
+            <Flex direction="row" align="center" gap="4" my="2">
+                <Flex direction="column" flexGrow="1">
+                    <Text as="div">特殊语言中的空格宽度</Text>
+                </Flex>
+                <TextField.Root
+                    value={amllSpaceWidth}
+                    onChange={(e) => setAmllSpaceWidthFunc(e.currentTarget.value)}
+                />
+            </Flex>
             <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
@@ -424,6 +448,11 @@ export const amllOrigHeightAtom = atomWithStorage(
 
 export const amllOrigFontsAtom = atomWithStorage(
     "amllOrigFontsAtom",
+    "",
+)
+
+export const amllSpaceWidthAtom = atomWithStorage(
+    "amllSpaceWidthAtom",
     "",
 )
 

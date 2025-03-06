@@ -105,9 +105,12 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
         }
 
         const storedAmllOrigFontsAtom = localStorage.getItem('amllOrigFontsAtom');
+        const storedAmllSpaceWidthAtom = localStorage.getItem('amllSpaceWidthAtom');
         consoleLog("INFO", "context", "storedAmllOrigFontsAtom: " + storedAmllOrigFontsAtom);
-        if (storedAmllOrigFontsAtom) {
-            const storedAmllOrigFonts = storedAmllOrigFontsAtom.replace(/"/g, '');
+        consoleLog("INFO", "context", "storedAmllSpaceWidthAtom: " + storedAmllSpaceWidthAtom);
+        if (storedAmllOrigFontsAtom || storedAmllSpaceWidthAtom) {
+            const storedAmllOrigFonts = storedAmllOrigFontsAtom?.replace(/"/g, '');
+            const storedAmllSpaceWidth = storedAmllSpaceWidthAtom?.replace(/"/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('orig_fonts');
             if (!styleElement) {
@@ -118,7 +121,8 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
             styleElement.id = 'orig_fonts';  // 设置 id
             styleElement.innerHTML = `
 div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div[class*="_lyricSubLine"]:not(:empty)) {
-    font-family: ${storedAmllOrigFonts}, sans-serif !important;
+    ${storedAmllOrigFonts ? `font-family: ${storedAmllOrigFonts}, sans-serif !important;` : ""}
+    ${storedAmllSpaceWidth ? `word-spacing: ${storedAmllSpaceWidth} !important;` : ""}
 }
             `;
         }
