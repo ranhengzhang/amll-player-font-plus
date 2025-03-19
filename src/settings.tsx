@@ -34,15 +34,19 @@ export function consoleLog(type: string, part: string, info: string) {
 
 export const SettingPage: FC = () => {
     const [amllBoldTitle, setAmllBoldTitle] = useAtom(amllBoldTitleAtom);
+    const [amllInfoFonts, setAmllInfoFonts] = useAtom(amllInfoFontsAtom);
     const [amllInfoSize, setAmllInfoSize] = useAtom(amllInfoSizeAtom);
     const [amllMetaMod, setAmllMetaMod] = useAtom(amllMetaModAtom);
+    const [amllOrigSize, setAmllOrigSize] = useAtom(amllOrigSizeAtom);
     const [amllOrigHeight, setAmllOrigHeight] = useAtom(amllOrigHeightAtom);
     const [amllOrigFonts, setAmllOrigFonts] = useAtom(amllOrigFontsAtom);
     const [amllSpaceWidth, setAmllSpaceWidth] = useAtom(amllSpaceWidthAtom);
+    const [amllAnyLang, setAmllAnyLang] = useAtom(amllAnyLangAtom);
     const [amllTsFonts, setAmllTsFonts] = useAtom(amllTsFontsAtom);
     const [amllTsSize, setAmllTsSize] = useAtom(amllTsSizeAtom);
     const [amllRomaFonts, setAmllRomaFonts] = useAtom(amllRomaFontsAtom);
     const [amllRomaSize, setAmllRomaSize] = useAtom(amllRomaSizeAtom);
+    const [amllSwapped, setAmllSwapped] = useAtom(enableLyricSwapTransRomanLineAtom)
 
     function setAmllBoldTitleFunc(bold: boolean) {
         setAmllBoldTitle(bold);
@@ -72,18 +76,17 @@ div[class^="_info"] > div[class*="_name"] {
         }
     }
 
-    let setAmllInfoSizeFunc = (() => {
-        let info_timeout = null;
-
-        return (size: string) => {
-            setAmllInfoSize(size);
-
+    let info_timeout = null;
+    let [setAmllInfoFontsFunc, setAmllInfoSizeFunc] = (() => {
+        let info_fonts = amllInfoFonts;
+        let info_size = amllInfoSize;
+        let set_info = (log:()=>void)=>{
             if (info_timeout) clearTimeout(info_timeout);
-            info_timeout = setTimeout(() => {
-                consoleLog("INFO", "context", "AmllInfoSizeAtom: " + size);
-                if (size) {
-                    // 创建一个 <style> 标签，并为其设置 id
-                    let styleElement = document.getElementById('info_fonts');
+            info_timeout = setTimeout(()=>{
+                log()
+                // 创建一个 <style> 标签，并为其设置 id
+                let styleElement = document.getElementById('info_fonts');
+                if (info_fonts || info_size) {
                     if (!styleElement) {
                         styleElement = document.createElement('style');
                         // 将 <style> 标签添加到 head 中
@@ -92,12 +95,27 @@ div[class^="_info"] > div[class*="_name"] {
                     styleElement.id = 'info_fonts';  // 设置 id
                     styleElement.innerHTML = `
 div[class^="_musicInfo"] > div[class^="_info"] {
-    font-size: ${size} !important;
+    ${info_size?`font-size: ${info_size} !important;`:'/* No Fonts */'}
+    ${info_fonts?`font-family: ${info_fonts} !important;`:'/* No Size */'}
 }
-`;
+`
+                } else {
+                    if (styleElement) {
+                        document.head.removeChild(styleElement);
+                    }
                 }
             }, 800);
-        };
+        }
+
+        return [(family: string) => {
+            setAmllInfoFonts(family);
+            info_fonts = family;
+            set_info(()=>consoleLog("INFO", "context", "AmllInfoFontsAtom: " + info_fonts));
+        }, (size: string) => {
+            setAmllInfoSize(size);
+            info_size = size;
+            set_info(()=>consoleLog("INFO", "context", "AmllInfoSizeAtom: " + info_size));
+        }]
     })();
 
     function setAmllMetaModFunc(meta: boolean) {
@@ -132,6 +150,36 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
         }
     }
 
+    let orig_timeout = null;
+    let setAmllOrigSizeFunc = (()=> {
+        return (size: string) => {
+            setAmllOrigSize(size);
+
+            if (orig_timeout) clearTimeout(orig_timeout);
+            orig_timeout = setTimeout(()=> {
+                consoleLog("INFO", "context", "AmllOrigSizeAtom: " + size);
+                if (size) {
+                    // 创建一个 <style> 标签，并为其设置 id
+                    let styleElement = document.getElementById('orig_size');
+                    if (!styleElement) {
+                        styleElement = document.createElement('style');
+                        // 将 <style> 标签添加到 head 中
+                        document.head.appendChild(styleElement);
+                    }
+                    styleElement.id = 'orig_size';  // 设置 id
+                    styleElement.innerHTML = `
+.amll-lyric-player {
+    font-size: ${size} !important;
+}
+`;
+                } else {
+                    let styleElement = document.getElementById('orig_size');
+                    if (styleElement) document.head.removeChild(styleElement);
+                }
+            }, 800)
+        };
+    })();
+
     function setAmllOrigHeightFunc(fix: boolean) {
         setAmllOrigHeight(fix);
 
@@ -158,13 +206,14 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
         }
     }
 
-    let [setAmllOrigFontsFunc, setAmllSpaceWidthFunc] = (()=>{
-        let orig_timeout = null;
+    let lang_timeout = null;
+    let [setAmllOrigFontsFunc, setAmllSpaceWidthFunc, setAmllAnyLangFunc] = (()=>{
         let orig_fonts = amllOrigFonts;
         let space_width = amllSpaceWidth;
+        let any_lang = amllAnyLang;
         let set_orig = (log:()=>void)=>{
-            if (orig_timeout) clearTimeout(orig_timeout);
-            orig_timeout = setTimeout(()=>{
+            if (lang_timeout) clearTimeout(lang_timeout);
+            lang_timeout = setTimeout(()=>{
                 log()
                 // 创建一个 <style> 标签，并为其设置 id
                 let styleElement = document.getElementById('orig_fonts');
@@ -178,6 +227,9 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
                     styleElement.innerHTML = `
 div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div[class*="_lyricSubLine"]:not(:empty)) {
     ${orig_fonts ? `font-family: ${orig_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
+}
+
+div[class*="_lyricMainLine"]${any_lang ? '' : ':has(+ div[class*="_lyricSubLine"]:not(:empty) + div[class*="_lyricSubLine"]:not(:empty))'} {
     ${space_width ? `word-spacing: ${space_width} !important;` : "/* No Space Info */"}
 }
 `;
@@ -197,11 +249,15 @@ div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div
             setAmllSpaceWidth(width);
             space_width = width;
             set_orig(()=>consoleLog("INFO", "context", "AmllSpaceWidthAtom: " + space_width));
+        }, (restrict: boolean)=>{
+            setAmllAnyLang(restrict);
+            any_lang = restrict;
+            set_orig(()=>consoleLog("LOG", "context", "AmllAnyLang: " + any_lang));
         }];
     })();
 
+    let ts_timeout = null;
     let [setAmllTsFontsFunc, setAmllTsSizeFunc] = (() => {
-        let ts_timeout = null;
         let ts_fonts = amllTsFonts;
         let ts_size = amllTsSize;
         let set_ts = (log: () => void) => {
@@ -242,8 +298,8 @@ div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
         }];
     })();
 
+    let roma_timeout = null;
     let [setAmllRomaFontsFunc, setAmllRomaSizeFunc] = (() => {
-        let roma_timeout = null;
         let roma_fonts = amllRomaFonts;
         let roma_size = amllRomaSize;
         let set_roma = (log: () => void) => {
@@ -297,12 +353,23 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
         );
     };
 
+    consoleLog("INFO", "context", "AmllSwapped: " + amllSwapped);
+
     return (<div>
         <SubTitle>歌曲信息部分设置</SubTitle>
         <Card mt="2">
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">字体大小</Text>
+                    <Text as="div">标题字体</Text>
+                </Flex>
+                <TextField.Root
+                    value={amllInfoFonts}
+                    onChange={(e) => setAmllInfoFontsFunc(e.currentTarget.value)}
+                />
+            </Flex>
+            <Flex direction="row" align="center" gap="4" my="2">
+                <Flex direction="column" flexGrow="1">
+                    <Text as="div">标题大小</Text>
                 </Flex>
                 <TextField.Root
                     value={amllInfoSize}
@@ -349,6 +416,18 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
+                    <Text as="div">原文字体大小</Text>
+                </Flex>
+                <Flex direction="column"  width="60%">
+                    <TextField.Root
+                        value={amllOrigSize}
+                        onChange={(e) => setAmllOrigSizeFunc(e.currentTarget.value)}
+                    />
+                </Flex>
+            </Flex>
+            <Separator my="3" size="4" />
+            <Flex direction="row" align="center" gap="4" my="2">
+                <Flex direction="column" flexGrow="1">
                     <Text as="div">特殊语言字体</Text>
                 </Flex>
                 <Flex direction="column"  width="60%">
@@ -366,11 +445,14 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
                     value={amllSpaceWidth}
                     onChange={(e) => setAmllSpaceWidthFunc(e.currentTarget.value)}
                 />
+                <Switch checked={amllAnyLang}
+                        onCheckedChange={(e)=>setAmllAnyLangFunc(e)}/>
+                <Text as="div">扩展到所有语言</Text>
             </Flex>
             <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">翻译行字体</Text>
+                    <Text as="div">{amllSwapped?'翻译':'音译'}行字体</Text>
                 </Flex>
                 <Flex direction="column" width="60%">
                     <TextField.Root
@@ -381,7 +463,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             </Flex>
             <Flex>
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">翻译行字号</Text>
+                    <Text as="div">{amllSwapped?'翻译':'音译'}行字号</Text>
                 </Flex>
                 <TextField.Root
                     value={amllTsSize}
@@ -391,7 +473,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">音译行字体</Text>
+                    <Text as="div">{amllSwapped?'音译':'翻译'}行字体</Text>
                 </Flex>
                 <Flex direction="column"  width="60%">
                     <TextField.Root
@@ -402,7 +484,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             </Flex>
             <Flex>
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">音译行字号</Text>
+                    <Text as="div">{amllSwapped?'音译':'翻译'}行字号</Text>
                 </Flex>
                 <TextField.Root
                     value={amllRomaSize}
@@ -431,6 +513,11 @@ export const amllBoldTitleAtom = atomWithStorage(
     false,
 );
 
+export const amllInfoFontsAtom = atomWithStorage(
+    "amllInfoFontsAtom",
+    "",
+)
+
 export const amllInfoSizeAtom = atomWithStorage(
     "amllInfoSizeAtom",
     "",
@@ -439,6 +526,11 @@ export const amllInfoSizeAtom = atomWithStorage(
 export const amllMetaModAtom = atomWithStorage(
     "amllMetaModAtom",
     false,
+)
+
+export const amllOrigSizeAtom = atomWithStorage(
+    "amllOrigSizeAtom",
+    "",
 )
 
 export const amllOrigHeightAtom = atomWithStorage(
@@ -454,6 +546,11 @@ export const amllOrigFontsAtom = atomWithStorage(
 export const amllSpaceWidthAtom = atomWithStorage(
     "amllSpaceWidthAtom",
     "",
+)
+
+export const amllAnyLangAtom = atomWithStorage(
+    "amllAnyLangAtom",
+    false,
 )
 
 export const amllTsFontsAtom = atomWithStorage(
@@ -475,3 +572,8 @@ export const amllRomaSizeAtom = atomWithStorage(
     "amllRomaSizeAtom",
     "",
 )
+
+export const enableLyricSwapTransRomanLineAtom = atomWithStorage(
+    "amll-react-full.enableLyricSwapTransRomanLineAtom",
+    false,
+);

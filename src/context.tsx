@@ -35,10 +35,13 @@ div[class^="_info"] > div[class*="_name"] {
             }
         }
 
+        const storedAmllInfoFontsAtom = localStorage.getItem('amllInfoFontsAtom');
         const storedAmllInfoSizeAtom = localStorage.getItem('amllInfoSizeAtom');
+        consoleLog("INFO", "context", "storedAmllInfoFontsAtom: " + storedAmllInfoFontsAtom);
         consoleLog("INFO", "context", "storedAmllInfoSizeAtom: " + storedAmllInfoSizeAtom);
-        if (storedAmllInfoSizeAtom) {
-            const storedAmllInfoSize = storedAmllInfoSizeAtom.replace(/"/g, '');
+        if (storedAmllInfoFontsAtom || storedAmllInfoSizeAtom) {
+            const storedAmllInfoFonts = storedAmllInfoFontsAtom?.replace(/"/g, '');
+            const storedAmllInfoSize = storedAmllInfoSizeAtom?.replace(/"/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('info_fonts');
             if (!styleElement) {
@@ -49,7 +52,8 @@ div[class^="_info"] > div[class*="_name"] {
             styleElement.id = 'info_fonts';  // 设置 id
             styleElement.innerHTML = `
 div[class^="_musicInfo"] > div[class^="_info"] {
-    font-size: ${storedAmllInfoSize} !important;
+    ${storedAmllInfoSize?`font-size: ${storedAmllInfoSize} !important;`:'/* No Fonts */'}
+    ${storedAmllInfoFonts?`font-family: ${storedAmllInfoFonts} !important;`:'/* No Size */'}
 }
             `;
         }
@@ -59,7 +63,7 @@ div[class^="_musicInfo"] > div[class^="_info"] {
         if (storedAmllMetaModAtom) {
             const storedLyricFontFamilyAtom = localStorage.getItem('amll-react-full.lyricFontFamily');
             if (storedLyricFontFamilyAtom) {
-                const storedLyricFontFamily = storedLyricFontFamilyAtom.replace(/"/g, '');
+                const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/"/g, '');
                 // 创建一个 <style> 标签，并为其设置 id
                 let styleElement = document.getElementById('meta_fonts');
                 if (!styleElement) {
@@ -104,10 +108,31 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
             `
         }
 
+        const storedAmllOrigSizeAtom = localStorage.getItem('amllOrigSizeAtom');
+        consoleLog("INFO", "context", "storedAmllOrigSizeAtom: " + storedAmllOrigSizeAtom);
+        if (storedAmllOrigSizeAtom) {
+            const storedAmllOrigSize = storedAmllOrigSizeAtom?.replace(/"/g, '');
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('orig_size');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                // 将 <style> 标签添加到 head 中
+                document.head.appendChild(styleElement);
+            }
+            styleElement.id = 'orig_size';  // 设置 id
+            styleElement.innerHTML = `
+.amll-lyric-player {
+    font-size: ${storedAmllOrigSize} !important;
+}
+`;
+        }
+
         const storedAmllOrigFontsAtom = localStorage.getItem('amllOrigFontsAtom');
         const storedAmllSpaceWidthAtom = localStorage.getItem('amllSpaceWidthAtom');
+        const storedAmllAnyLangAtom = localStorage.getItem('amllAnyLangAtom');
         consoleLog("INFO", "context", "storedAmllOrigFontsAtom: " + storedAmllOrigFontsAtom);
         consoleLog("INFO", "context", "storedAmllSpaceWidthAtom: " + storedAmllSpaceWidthAtom);
+        consoleLog("INFO", "context", "storedAmllAnyLangAtom: " + storedAmllAnyLangAtom);
         if (storedAmllOrigFontsAtom || storedAmllSpaceWidthAtom) {
             const storedAmllOrigFonts = storedAmllOrigFontsAtom?.replace(/"/g, '');
             const storedAmllSpaceWidth = storedAmllSpaceWidthAtom?.replace(/"/g, '');
@@ -121,8 +146,11 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
             styleElement.id = 'orig_fonts';  // 设置 id
             styleElement.innerHTML = `
 div[class*="_lyricMainLine"]:has(+ div[class*="_lyricSubLine"]:not(:empty) + div[class*="_lyricSubLine"]:not(:empty)) {
-    ${storedAmllOrigFonts ? `font-family: ${storedAmllOrigFonts}, sans-serif !important;` : ""}
-    ${storedAmllSpaceWidth ? `word-spacing: ${storedAmllSpaceWidth} !important;` : ""}
+    ${storedAmllOrigFonts ? `font-family: ${storedAmllOrigFonts}, sans-serif !important;` : "/* No Fonts Info */"}
+}
+
+div[class*="_lyricMainLine"]${storedAmllAnyLangAtom ? '' : ':has(+ div[class*="_lyricSubLine"]:not(:empty) + div[class*="_lyricSubLine"]:not(:empty))'} {
+    ${storedAmllSpaceWidth ? `word-spacing: ${storedAmllSpaceWidth} !important;` : "/* No Space Info */"}
 }
             `;
         }
