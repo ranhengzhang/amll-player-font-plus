@@ -7,6 +7,26 @@ export const ExtensionContext: FC = () => {
     }, []);
 
     useEffect(() => {
+        const storedLyricFontFamilyAtom = localStorage.getItem('amll-react-full.lyricFontFamily');
+
+        if (storedLyricFontFamilyAtom) {
+            const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/"/g, '');
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('fix_fonts');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                // 将 <style> 标签添加到 head 中
+                document.head.appendChild(styleElement);
+            }
+            styleElement.id = 'fix_fonts';  // 设置 id
+            styleElement.innerHTML = `
+div.amll-lyric-player {
+    font-family: ${storedLyricFontFamily};
+}
+            `;
+            consoleLog("LOG", "font", "还原歌词字体为"+storedLyricFontFamily);
+        }
+
         const storedBoldTitleAtom = localStorage.getItem('amllBoldTitleAtom');
         consoleLog("INFO", "context", "storedBoldTitleAtom: " + storedBoldTitleAtom);
         if (storedBoldTitleAtom) {
@@ -61,7 +81,6 @@ div[class^="_musicInfo"] > div[class^="_info"] {
         const storedAmllMetaModAtom = localStorage.getItem('amllMetaModAtom');
         consoleLog("INFO", "context", "storedAmllMetaModAtom: " + storedAmllMetaModAtom);
         if (storedAmllMetaModAtom) {
-            const storedLyricFontFamilyAtom = localStorage.getItem('amll-react-full.lyricFontFamily');
             if (storedLyricFontFamilyAtom) {
                 const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/"/g, '');
                 // 创建一个 <style> 标签，并为其设置 id
