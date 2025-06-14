@@ -146,6 +146,25 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
 `;
         }
 
+        const storedAmllBgSizeAtom = localStorage.getItem('amllBgSizeAtom');
+        consoleLog("INFO", "context", "storedAmllBgSizeAtom: " + storedAmllBgSizeAtom);
+        if (storedAmllBgSizeAtom) {
+            const storedAmllBgSize = storedAmllBgSizeAtom?.replace(/"/g, '');
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('bg_size');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                // 将 <style> 标签添加到 head 中
+                document.head.appendChild(styleElement);
+            }
+            styleElement.id = 'bg_size';  // 设置 id
+            styleElement.innerHTML = `
+div.amll-lyric-player > div[class*="_lyricBgLine"] {
+    --amll-lp-secondary-font-size: ${storedAmllBgSize} !important;
+}
+`;
+        }
+
         const storedAmllOrigFontsAtom = localStorage.getItem('amllOrigFontsAtom');
         const storedAmllSpaceWidthAtom = localStorage.getItem('amllSpaceWidthAtom');
         const storedAmllAnyLangAtom = localStorage.getItem('amllAnyLangAtom');

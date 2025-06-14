@@ -38,6 +38,7 @@ export const SettingPage: FC = () => {
     const [amllInfoSize, setAmllInfoSize] = useAtom(amllInfoSizeAtom);
     const [amllMetaMod, setAmllMetaMod] = useAtom(amllMetaModAtom);
     const [amllOrigSize, setAmllOrigSize] = useAtom(amllOrigSizeAtom);
+    const [amllBgSize, setAmllBgSize] = useAtom(amllBgSizeAtom);
     const [amllOrigHeight, setAmllOrigHeight] = useAtom(amllOrigHeightAtom);
     const [amllOrigFonts, setAmllOrigFonts] = useAtom(amllOrigFontsAtom);
     const [amllSpaceWidth, setAmllSpaceWidth] = useAtom(amllSpaceWidthAtom);
@@ -174,6 +175,36 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
 `;
                 } else {
                     let styleElement = document.getElementById('orig_size');
+                    if (styleElement) document.head.removeChild(styleElement);
+                }
+            }, 800)
+        };
+    })();
+
+    let bg_timeout = null;
+    let setAmllBgSizeFunc = (()=> {
+        return (size: string) => {
+            setAmllBgSize(size);
+
+            if (bg_timeout) clearTimeout(bg_timeout);
+            bg_timeout = setTimeout(()=> {
+                consoleLog("INFO", "context", "AmllBgSizeAtom: " + size);
+                if (size) {
+                    // 创建一个 <style> 标签，并为其设置 id
+                    let styleElement = document.getElementById('bg_size');
+                    if (!styleElement) {
+                        styleElement = document.createElement('style');
+                        // 将 <style> 标签添加到 head 中
+                        document.head.appendChild(styleElement);
+                    }
+                    styleElement.id = 'bg_size';  // 设置 id
+                    styleElement.innerHTML = `
+div.amll-lyric-player > div[class*="_lyricBgLine"] {
+    --amll-lp-secondary-font-size: ${size} !important;
+}
+`;
+                } else {
+                    let styleElement = document.getElementById('bg_size');
                     if (styleElement) document.head.removeChild(styleElement);
                 }
             }, 800)
@@ -416,12 +447,23 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">原文字体大小</Text>
+                    <Text as="div">主唱行字体大小</Text>
                 </Flex>
                 <Flex direction="column"  width="60%">
                     <TextField.Root
                         value={amllOrigSize}
                         onChange={(e) => setAmllOrigSizeFunc(e.currentTarget.value)}
+                    />
+                </Flex>
+            </Flex>
+            <Flex direction="row" align="center" gap="4" my="2">
+                <Flex direction="column" flexGrow="1">
+                    <Text as="div">背景行字体大小</Text>
+                </Flex>
+                <Flex direction="column"  width="60%">
+                    <TextField.Root
+                        value={amllBgSize}
+                        onChange={(e) => setAmllBgSizeFunc(e.currentTarget.value)}
                     />
                 </Flex>
             </Flex>
@@ -530,6 +572,11 @@ export const amllMetaModAtom = atomWithStorage(
 
 export const amllOrigSizeAtom = atomWithStorage(
     "amllOrigSizeAtom",
+    "",
+)
+
+export const amllBgSizeAtom = atomWithStorage(
+    "amllBgSizeAtom",
     "",
 )
 
