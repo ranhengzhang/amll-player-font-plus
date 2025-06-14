@@ -488,7 +488,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
                 </Flex>
                 <TextField.Root
                     value={amllRomaSize}
-                    onChange={(e) => setAmllTsSizeFunc(e.currentTarget.value)}
+                    onChange={(e) => setAmllRomaSizeFunc(e.currentTarget.value)}
                 />
             </Flex>
             <Separator my="3" size="4" />
