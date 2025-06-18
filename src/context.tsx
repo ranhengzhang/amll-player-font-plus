@@ -204,12 +204,9 @@ div[class*="_lyricMainLine"]${storedAmllAnyLangAtom ? '' : ':has(+ div[class*="_
         }
 
         const storedAmllTsFontsAtom = localStorage.getItem('amllTsFontsAtom');
-        const storedAmllTsSizeAtom = localStorage.getItem('amllTsSizeAtom');
         consoleLog("INFO", "context", "storedAmllTsFontsAtom: " + storedAmllTsFontsAtom);
-        consoleLog("INFO", "context", "storedAmllTsSizeAtom: " + storedAmllTsSizeAtom);
-        if (storedAmllTsFontsAtom || storedAmllTsSizeAtom) {
+        if (storedAmllTsFontsAtom) {
             const storedAmllTsFonts = storedAmllTsFontsAtom?.replace(/"/g, '');
-            const storedAmllTsSize = storedAmllTsSizeAtom?.replace(/"/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('ts_fonts');
             if (!styleElement) {
@@ -219,20 +216,35 @@ div[class*="_lyricMainLine"]${storedAmllAnyLangAtom ? '' : ':has(+ div[class*="_
             }
             styleElement.id = 'ts_fonts';  // 设置 id
             styleElement.innerHTML = `
+div[class*="_lyricLine"] > div:nth-child(` + (getSwapped() ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
+    font-family: ${storedAmllTsFonts}, sans-serif !important;
+}
+            `;
+        }
+
+        const storedAmllTsSizeAtom = localStorage.getItem('amllTsSizeAtom');
+        consoleLog("INFO", "context", "storedAmllTsSizeAtom: " + storedAmllTsSizeAtom);
+        if (storedAmllTsSizeAtom) {
+            const storedAmllTsSize = storedAmllTsSizeAtom?.replace(/"/g, '');
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('ts_size');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                // 将 <style> 标签添加到 head 中
+                document.head.appendChild(styleElement);
+            }
+            styleElement.id = 'ts_size';  // 设置 id
+            styleElement.innerHTML = `
 div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (getSwapped() ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
-    ${storedAmllTsFonts ? `font-family: ${storedAmllTsFonts}, sans-serif !important;` : ""}
     ${storedAmllTsSize ? `--amll-lp-secondary-font-size: ${storedAmllTsSize} !important;` : ""}
 }
             `;
         }
 
         const storedAmllRomaFontsAtom = localStorage.getItem('amllRomaFontsAtom');
-        const storedAmllRomaSizeAtom = localStorage.getItem('amllRomaSizeAtom');
         consoleLog("INFO", "context", "storedAmllRomaFontsAtom: " + storedAmllRomaFontsAtom);
-        consoleLog("INFO", "context", "storedAmllRomaSizeAtom: " + storedAmllRomaSizeAtom);
-        if (storedAmllRomaFontsAtom || storedAmllRomaSizeAtom) {
+        if (storedAmllRomaFontsAtom) {
             const storedAmllRomaFonts = storedAmllRomaFontsAtom?.replace(/"/g, '');
-            const storedAmllRomaSize = storedAmllRomaSizeAtom?.replace(/"/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('roma_fonts');
             if (!styleElement) {
@@ -242,9 +254,27 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (ge
             }
             styleElement.id = 'roma_fonts';  // 设置 id
             styleElement.innerHTML = `
-div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (getSwapped() ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"] > div:nth-child(` + (getSwapped() ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
     ${storedAmllRomaFonts ? `font-family: ${storedAmllRomaFonts}, sans-serif !important;` : ""}
-    ${storedAmllRomaSize ? `--amll-lp-secondary-font-size: ${storedAmllRomaSize} !important;` : ""}
+}
+            `;
+        }
+
+        const storedAmllRomaSizeAtom = localStorage.getItem('amllRomaSizeAtom');
+        consoleLog("INFO", "context", "storedAmllRomaSizeAtom: " + storedAmllRomaSizeAtom);
+        if (storedAmllRomaSizeAtom) {
+            const storedAmllRomaSize = storedAmllRomaSizeAtom?.replace(/"/g, '');
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('roma_size');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                // 将 <style> 标签添加到 head 中
+                document.head.appendChild(styleElement);
+            }
+            styleElement.id = 'roma_size';  // 设置 id
+            styleElement.innerHTML = `
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (getSwapped() ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
+    --amll-lp-secondary-font-size: ${storedAmllRomaSize} !important;
 }
             `;
         }

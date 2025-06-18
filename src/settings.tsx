@@ -81,9 +81,9 @@ div[class^="_info"] > div[class*="_name"] {
     let [setAmllInfoFontsFunc, setAmllInfoSizeFunc] = (() => {
         let info_fonts = amllInfoFonts;
         let info_size = amllInfoSize;
-        let set_info = (log:()=>void)=>{
+        let set_info = (log: () => void) => {
             if (info_timeout) clearTimeout(info_timeout);
-            info_timeout = setTimeout(()=>{
+            info_timeout = setTimeout(() => {
                 log()
                 // 创建一个 <style> 标签，并为其设置 id
                 let styleElement = document.getElementById('info_fonts');
@@ -96,8 +96,8 @@ div[class^="_info"] > div[class*="_name"] {
                     styleElement.id = 'info_fonts';  // 设置 id
                     styleElement.innerHTML = `
 div[class^="_musicInfo"] > div[class^="_info"] {
-    ${info_size?`font-size: ${info_size} !important;`:'/* No Fonts */'}
-    ${info_fonts?`font-family: ${info_fonts} !important;`:'/* No Size */'}
+    ${info_size ? `font-size: ${info_size} !important;` : '/* No Fonts */'}
+    ${info_fonts ? `font-family: ${info_fonts} !important;` : '/* No Size */'}
 }
 `
                 } else {
@@ -111,11 +111,11 @@ div[class^="_musicInfo"] > div[class^="_info"] {
         return [(family: string) => {
             setAmllInfoFonts(family);
             info_fonts = family;
-            set_info(()=>consoleLog("INFO", "context", "AmllInfoFontsAtom: " + info_fonts));
+            set_info(() => consoleLog("INFO", "context", "AmllInfoFontsAtom: " + info_fonts));
         }, (size: string) => {
             setAmllInfoSize(size);
             info_size = size;
-            set_info(()=>consoleLog("INFO", "context", "AmllInfoSizeAtom: " + info_size));
+            set_info(() => consoleLog("INFO", "context", "AmllInfoSizeAtom: " + info_size));
         }]
     })();
 
@@ -152,12 +152,12 @@ div.amll-lyric-player > div[class*="_lyricLine"]:empty + div[class*="_lyricLine"
     }
 
     let orig_timeout = null;
-    let setAmllOrigSizeFunc = (()=> {
+    let setAmllOrigSizeFunc = (() => {
         return (size: string) => {
             setAmllOrigSize(size);
 
             if (orig_timeout) clearTimeout(orig_timeout);
-            orig_timeout = setTimeout(()=> {
+            orig_timeout = setTimeout(() => {
                 consoleLog("INFO", "context", "AmllOrigSizeAtom: " + size);
                 if (size) {
                     // 创建一个 <style> 标签，并为其设置 id
@@ -182,12 +182,12 @@ div.amll-lyric-player > div[class*="_lyricLine"]:empty + div[class*="_lyricLine"
     })();
 
     let bg_timeout = null;
-    let setAmllBgSizeFunc = (()=> {
+    let setAmllBgSizeFunc = (() => {
         return (size: string) => {
             setAmllBgSize(size);
 
             if (bg_timeout) clearTimeout(bg_timeout);
-            bg_timeout = setTimeout(()=> {
+            bg_timeout = setTimeout(() => {
                 consoleLog("INFO", "context", "AmllBgSizeAtom: " + size);
                 if (size) {
                     // 创建一个 <style> 标签，并为其设置 id
@@ -238,13 +238,13 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
     }
 
     let lang_timeout = null;
-    let [setAmllOrigFontsFunc, setAmllSpaceWidthFunc, setAmllAnyLangFunc] = (()=>{
+    let [setAmllOrigFontsFunc, setAmllSpaceWidthFunc, setAmllAnyLangFunc] = (() => {
         let orig_fonts = amllOrigFonts;
         let space_width = amllSpaceWidth;
         let any_lang = amllAnyLang;
-        let set_orig = (log:()=>void)=>{
+        let set_orig = (log: () => void) => {
             if (lang_timeout) clearTimeout(lang_timeout);
-            lang_timeout = setTimeout(()=>{
+            lang_timeout = setTimeout(() => {
                 log()
                 // 创建一个 <style> 标签，并为其设置 id
                 let styleElement = document.getElementById('orig_fonts');
@@ -272,110 +272,138 @@ div[class*="_lyricMainLine"]${any_lang ? '' : ':has(+ div[class*="_lyricSubLine"
             }, 800);
         }
 
-        return [(family: string) =>{
+        return [(family: string) => {
             setAmllOrigFonts(family);
             orig_fonts = family;
-            set_orig(()=>consoleLog("INFO", "context", "AmllOrigFontsAtom: " + orig_fonts))
-        }, (width: string)=>{
+            set_orig(() => consoleLog("INFO", "context", "AmllOrigFontsAtom: " + orig_fonts))
+        }, (width: string) => {
             setAmllSpaceWidth(width);
             space_width = width;
-            set_orig(()=>consoleLog("INFO", "context", "AmllSpaceWidthAtom: " + space_width));
-        }, (restrict: boolean)=>{
+            set_orig(() => consoleLog("INFO", "context", "AmllSpaceWidthAtom: " + space_width));
+        }, (restrict: boolean) => {
             setAmllAnyLang(restrict);
             any_lang = restrict;
-            set_orig(()=>consoleLog("LOG", "context", "AmllAnyLang: " + any_lang));
+            set_orig(() => consoleLog("LOG", "context", "AmllAnyLang: " + any_lang));
         }];
     })();
 
-    let ts_timeout = null;
-    let [setAmllTsFontsFunc, setAmllTsSizeFunc] = (() => {
-        let ts_fonts = amllTsFonts;
-        let ts_size = amllTsSize;
-        let set_ts = (log: () => void) => {
-            if (ts_timeout) clearTimeout(ts_timeout);
-            ts_timeout = setTimeout(() => {
-                log()
-                // 创建一个 <style> 标签，并为其设置 id
-                let styleElement = document.getElementById('ts_fonts');
-                if (ts_fonts || ts_size) {
-                    if (!styleElement) {
-                        styleElement = document.createElement('style');
-                        // 将 <style> 标签添加到 head 中
-                        document.head.appendChild(styleElement);
-                    }
-                    styleElement.id = 'ts_fonts';  // 设置 id
-                    styleElement.innerHTML = `
+    let ts_font_timeout = null;
+    function setAmllTsFontsFunc(family: string){
+        setAmllTsFonts(family);
+        if (ts_font_timeout) clearTimeout(ts_font_timeout);
+        ts_font_timeout = setTimeout(() => {
+            consoleLog("INFO", "context", "AmllTsFontsAtom: " + family)
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('ts_fonts');
+            if (family) {
+                if (!styleElement) {
+                    styleElement = document.createElement('style');
+                    // 将 <style> 标签添加到 head 中
+                    document.head.appendChild(styleElement);
+                }
+                styleElement.id = 'ts_fonts';  // 设置 id
+                styleElement.innerHTML = `
+div[class*="_lyricLine"] > div:nth-child(` + (amllSwapped ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
+    font-family: ${family}, sans-serif !important;
+}
+`;
+            } else {
+                if (styleElement) {
+                    document.head.removeChild(styleElement);
+                }
+            }
+        }, 800);
+    }
+
+    let ts_size_timeout = null;
+    function setAmllTsSizeFunc(size: string){
+        setAmllTsSize(size);
+        if (ts_size_timeout) clearTimeout(ts_size_timeout);
+        ts_size_timeout = setTimeout(() => {
+            consoleLog("INFO", "context", "AmllTsSizeAtom: " + size)
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('ts_size');
+            if (size) {
+                if (!styleElement) {
+                    styleElement = document.createElement('style');
+                    // 将 <style> 标签添加到 head 中
+                    document.head.appendChild(styleElement);
+                }
+                styleElement.id = 'ts_size';  // 设置 id
+                styleElement.innerHTML = `
 div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (amllSwapped ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
-    ${ts_fonts ? `font-family: ${ts_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
-    ${ts_size ? `--amll-lp-secondary-font-size: ${ts_size} !important;` : "/* No Size Info */"}
+    --amll-lp-secondary-font-size: ${size} !important;
 }
 `;
-                } else {
-                    if (styleElement) {
-                        document.head.removeChild(styleElement);
-                    }
+            } else {
+                if (styleElement) {
+                    document.head.removeChild(styleElement);
                 }
-            }, 800);
-        }
+            }
+        }, 800);
+    }
 
-        return [(family: string) => {
-            setAmllTsFonts(family);
-            ts_fonts = family;
-            set_ts(() => consoleLog("INFO", "context", "AmllTsFontsAtom: " + ts_fonts));
-        }, (size: string) => {
-            setAmllTsSize(size);
-            ts_size = size;
-            set_ts(() => consoleLog("INFO", "context", "AmllTsSizeAtom: " + ts_size));
-        }];
-    })();
+    let roma_font_timeout = null;
+    function setAmllRomaFontsFunc(family: string){
+        setAmllRomaFonts(family);
+        if (roma_font_timeout) clearTimeout(roma_font_timeout);
+        roma_font_timeout = setTimeout(() => {
+            consoleLog("INFO", "context", "AmllRomaFontsAtom: " + family)
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('roma_fonts');
+            if (family) {
+                if (!styleElement) {
+                    styleElement = document.createElement('style');
+                    // 将 <style> 标签添加到 head 中
+                    document.head.appendChild(styleElement);
+                }
+                styleElement.id = 'roma_fonts';  // 设置 id
+                styleElement.innerHTML = `
+div[class*="_lyricLine"] > div:nth-child(` + (amllSwapped ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
+    font-family: ${family}, sans-serif !important;
+}
+`;
+            } else {
+                if (styleElement) {
+                    document.head.removeChild(styleElement);
+                }
+            }
+        }, 800);
+    }
 
-    let roma_timeout = null;
-    let [setAmllRomaFontsFunc, setAmllRomaSizeFunc] = (() => {
-        let roma_fonts = amllRomaFonts;
-        let roma_size = amllRomaSize;
-        let set_roma = (log: () => void) => {
-            if (roma_timeout) clearTimeout(roma_timeout);
-            roma_timeout = setTimeout(() => {
-                log();
-                // 创建一个 <style> 标签，并为其设置 id
-                let styleElement = document.getElementById('roma_fonts');
-                if (roma_fonts || roma_size) {
-                    if (!styleElement) {
-                        styleElement = document.createElement('style');
-                        // 将 <style> 标签添加到 head 中
-                        document.head.appendChild(styleElement);
-                    }
-                    styleElement.id = 'roma_fonts';  // 设置 id
-                    styleElement.innerHTML = `
+    let roma_size_timeout = null;
+    function setAmllRomaSizeFunc(size: string){
+        setAmllRomaSize(size);
+        if (roma_size_timeout) clearTimeout(roma_size_timeout);
+        roma_size_timeout = setTimeout(() => {
+            consoleLog("INFO", "context", "AmllRomaSizeAtom: " + size)
+            // 创建一个 <style> 标签，并为其设置 id
+            let styleElement = document.getElementById('roma_size');
+            if (size) {
+                if (!styleElement) {
+                    styleElement = document.createElement('style');
+                    // 将 <style> 标签添加到 head 中
+                    document.head.appendChild(styleElement);
+                }
+                styleElement.id = 'roma_size';  // 设置 id
+                styleElement.innerHTML = `
 div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (amllSwapped ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
-    ${roma_fonts ? `font-family: ${roma_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
-    ${roma_size ? `--amll-lp-secondary-font-size: ${roma_size} !important;` : "/* No Size Info */"}
+    --amll-lp-secondary-font-size: ${size} !important;
 }
 `;
-                } else {
-                    if (styleElement) {
-                        document.head.removeChild(styleElement);
-                    }
+            } else {
+                if (styleElement) {
+                    document.head.removeChild(styleElement);
                 }
-            }, 800);
-        }
-
-        return [(family: string) => {
-            setAmllRomaFonts(family);
-            roma_fonts = family;
-            set_roma(() => consoleLog("INFO", "context", "AmllRomaFontsAtom: " + roma_fonts));
-        }, (size: string) => {
-            setAmllRomaSize(size);
-            roma_size = size;
-            set_roma(() => consoleLog("INFO", "context", "AmllRomaSizeAtom: " + roma_size));
-        }];
-    })();
+            }
+        }, 800);
+    }
 
     useEffect(() => {
         console.log("SettingPage Loaded");
     }, []);
 
-    // 前置组件
+// 前置组件
     const SubTitle: FC<PropsWithChildren<TextProps>> = ({children, ...props}) => {
         return (
             <Text weight="bold" size="4" my="4" as="div" {...props}>
@@ -444,12 +472,12 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (am
                 <Switch checked={amllOrigHeight}
                         onCheckedChange={(e) => setAmllOrigHeightFunc(e)}/>
             </Flex>
-            <Separator my="3" size="4" />
+            <Separator my="3" size="4"/>
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
                     <Text as="div">主唱行字体大小</Text>
                 </Flex>
-                <Flex direction="column"  width="60%">
+                <Flex direction="column" width="60%">
                     <TextField.Root
                         value={amllOrigSize}
                         onChange={(e) => setAmllOrigSizeFunc(e.currentTarget.value)}
@@ -460,19 +488,19 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (am
                 <Flex direction="column" flexGrow="1">
                     <Text as="div">背景行字体大小</Text>
                 </Flex>
-                <Flex direction="column"  width="60%">
+                <Flex direction="column" width="60%">
                     <TextField.Root
                         value={amllBgSize}
                         onChange={(e) => setAmllBgSizeFunc(e.currentTarget.value)}
                     />
                 </Flex>
             </Flex>
-            <Separator my="3" size="4" />
+            <Separator my="3" size="4"/>
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
                     <Text as="div">特殊语言字体</Text>
                 </Flex>
-                <Flex direction="column"  width="60%">
+                <Flex direction="column" width="60%">
                     <TextField.Root
                         value={amllOrigFonts}
                         onChange={(e) => setAmllOrigFontsFunc(e.currentTarget.value)}
@@ -488,10 +516,10 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (am
                     onChange={(e) => setAmllSpaceWidthFunc(e.currentTarget.value)}
                 />
                 <Switch checked={amllAnyLang}
-                        onCheckedChange={(e)=>setAmllAnyLangFunc(e)}/>
+                        onCheckedChange={(e) => setAmllAnyLangFunc(e)}/>
                 <Text as="div">扩展到所有语言</Text>
             </Flex>
-            <Separator my="3" size="4" />
+            <Separator my="3" size="4"/>
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
                     <Text as="div">翻译行字体</Text>
@@ -512,12 +540,12 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (am
                     onChange={(e) => setAmllTsSizeFunc(e.currentTarget.value)}
                 />
             </Flex>
-            <Separator my="3" size="4" />
+            <Separator my="3" size="4"/>
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
                     <Text as="div">音译行字体</Text>
                 </Flex>
-                <Flex direction="column"  width="60%">
+                <Flex direction="column" width="60%">
                     <TextField.Root
                         value={amllRomaFonts}
                         onChange={(e) => setAmllRomaFontsFunc(e.currentTarget.value)}
@@ -533,7 +561,7 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (am
                     onChange={(e) => setAmllRomaSizeFunc(e.currentTarget.value)}
                 />
             </Flex>
-            <Separator my="3" size="4" />
+            <Separator my="3" size="4"/>
             <Flex direction="column" align="start" my="2">
                 <Text as="div" className="_lyricMainLine" size="7">
                     <span>012 </span>
