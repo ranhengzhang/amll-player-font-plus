@@ -169,8 +169,8 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
             }
             styleElement.id = 'bg_size';  // 设置 id
             styleElement.innerHTML = `
-div.amll-lyric-player > div[class*="_lyricBgLine"] {
-    --amll-lp-secondary-font-size: ${storedAmllBgSize} !important;
+div.amll-lyric-player > div[class*="_lyricBgLine"] > div {
+    font-size: ${storedAmllBgSize} !important;
 }
 `;
         }
@@ -219,7 +219,7 @@ div[class*="_lyricMainLine"]${storedAmllAnyLangAtom ? '' : ':has(+ div[class*="_
             }
             styleElement.id = 'ts_fonts';  // 设置 id
             styleElement.innerHTML = `
-div[class*="` + (getSwapped() ? `_lyricSubLine` : `_lyricMainLine`) + `"] + div[class*="_lyricSubLine"] {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (getSwapped() ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
     ${storedAmllTsFonts ? `font-family: ${storedAmllTsFonts}, sans-serif !important;` : ""}
     ${storedAmllTsSize ? `--amll-lp-secondary-font-size: ${storedAmllTsSize} !important;` : ""}
 }
@@ -242,7 +242,7 @@ div[class*="` + (getSwapped() ? `_lyricSubLine` : `_lyricMainLine`) + `"] + div[
             }
             styleElement.id = 'roma_fonts';  // 设置 id
             styleElement.innerHTML = `
-div[class*="` + (getSwapped() ? `_lyricMainLine` : `_lyricSubLine`) + `"] + div[class*="_lyricSubLine"] {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (getSwapped() ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
     ${storedAmllRomaFonts ? `font-family: ${storedAmllRomaFonts}, sans-serif !important;` : ""}
     ${storedAmllRomaSize ? `--amll-lp-secondary-font-size: ${storedAmllRomaSize} !important;` : ""}
 }

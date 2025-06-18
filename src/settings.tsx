@@ -135,10 +135,10 @@ div[class^="_musicInfo"] > div[class^="_info"] {
             styleElement.id = 'meta_fonts';  // 设置 id
             if (meta) {
                 styleElement.innerHTML = `
-div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"] > div[class^="_lyricMainLine"] > span {
+div.amll-lyric-player > div[class*="_lyricLine"]:empty + div[class*="_lyricLine"] > div[class*="_lyricMainLine"] > span {
     font-family: ${storedLyricFontFamily} !important;
 }
-div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"]:has(+ div[style*="blur(2px)"]) {
+div.amll-lyric-player > div[class*="_lyricLine"]:empty + div[class*="_lyricLine"]:has(+ div[style*="blur(2px)"]) {
     filter: blur(0px) !important;
 }
 `;
@@ -199,8 +199,8 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
                     }
                     styleElement.id = 'bg_size';  // 设置 id
                     styleElement.innerHTML = `
-div.amll-lyric-player > div[class*="_lyricBgLine"] {
-    --amll-lp-secondary-font-size: ${size} !important;
+div.amll-lyric-player > div[class*="_lyricBgLine"] > div {
+    font-size: ${size} !important;
 }
 `;
                 } else {
@@ -305,7 +305,7 @@ div[class*="_lyricMainLine"]${any_lang ? '' : ':has(+ div[class*="_lyricSubLine"
                     }
                     styleElement.id = 'ts_fonts';  // 设置 id
                     styleElement.innerHTML = `
-div[class*="` + (amllSwapped ? `_lyricSubLine` : `_lyricMainLine`) + `"] + div[class*="_lyricSubLine"] {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (amllSwapped ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
     ${ts_fonts ? `font-family: ${ts_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
     ${ts_size ? `--amll-lp-secondary-font-size: ${ts_size} !important;` : "/* No Size Info */"}
 }
@@ -347,7 +347,7 @@ div[class*="` + (amllSwapped ? `_lyricSubLine` : `_lyricMainLine`) + `"] + div[c
                     }
                     styleElement.id = 'roma_fonts';  // 设置 id
                     styleElement.innerHTML = `
-div[class*="` + (amllSwapped ? `_lyricMainLine` : `_lyricSubLine`) + `"] + div[class*="_lyricSubLine"] {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (amllSwapped ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
     ${roma_fonts ? `font-family: ${roma_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
     ${roma_size ? `--amll-lp-secondary-font-size: ${roma_size} !important;` : "/* No Size Info */"}
 }
