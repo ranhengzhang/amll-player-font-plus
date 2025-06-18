@@ -305,9 +305,9 @@ div[class*="_lyricMainLine"]${any_lang ? '' : ':has(+ div[class*="_lyricSubLine"
                     }
                     styleElement.id = 'ts_fonts';  // 设置 id
                     styleElement.innerHTML = `
-div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
+div[class*="` + (amllSwapped ? `_lyricSubLine` : `_lyricMainLine`) + `"] + div[class*="_lyricSubLine"] {
     ${ts_fonts ? `font-family: ${ts_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
-    ${ts_size ? `font-size: ${ts_size} !important;` : "/* No Size Info */"}
+    ${ts_size ? `--amll-lp-secondary-font-size: ${ts_size} !important;` : "/* No Size Info */"}
 }
 `;
                 } else {
@@ -347,9 +347,9 @@ div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
                     }
                     styleElement.id = 'roma_fonts';  // 设置 id
                     styleElement.innerHTML = `
-div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
+div[class*="` + (amllSwapped ? `_lyricMainLine` : `_lyricSubLine`) + `"] + div[class*="_lyricSubLine"] {
     ${roma_fonts ? `font-family: ${roma_fonts}, sans-serif !important;` : "/* No Fonts Info */"}
-    ${roma_size ? `font-size: ${roma_size} !important;` : "/* No Size Info */"}
+    ${roma_size ? `--amll-lp-secondary-font-size: ${roma_size} !important;` : "/* No Size Info */"}
 }
 `;
                 } else {
@@ -494,7 +494,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">{amllSwapped?'翻译':'音译'}行字体</Text>
+                    <Text as="div">翻译行字体</Text>
                 </Flex>
                 <Flex direction="column" width="60%">
                     <TextField.Root
@@ -505,7 +505,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             </Flex>
             <Flex>
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">{amllSwapped?'翻译':'音译'}行字号</Text>
+                    <Text as="div">翻译行字号</Text>
                 </Flex>
                 <TextField.Root
                     value={amllTsSize}
@@ -515,7 +515,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             <Separator my="3" size="4" />
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">{amllSwapped?'音译':'翻译'}行字体</Text>
+                    <Text as="div">音译行字体</Text>
                 </Flex>
                 <Flex direction="column"  width="60%">
                     <TextField.Root
@@ -526,7 +526,7 @@ div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
             </Flex>
             <Flex>
                 <Flex direction="column" flexGrow="1">
-                    <Text as="div">{amllSwapped?'音译':'翻译'}行字号</Text>
+                    <Text as="div">音译行字号</Text>
                 </Flex>
                 <TextField.Root
                     value={amllRomaSize}

@@ -8,6 +8,16 @@ export const ExtensionContext: FC = () => {
 
     useEffect(() => {
         const storedLyricFontFamilyAtom = localStorage.getItem('amll-react-full.lyricFontFamily');
+        const storedLyricSwappedAtom = localStorage.getItem('amll-react-full.enableLyricSwapTransRomanLineAtom');
+        const getSwapped = ((storedLyricSwappedAtom: string)=>{
+            let val = false;
+            if (storedLyricSwappedAtom) {
+                const storedLyricSwapped = storedLyricSwappedAtom?.replace(/"/g, '');
+                val = storedLyricSwapped !== "false";
+            }
+            consoleLog("LOG", "font", "swapped: " + (storedLyricSwappedAtom??val));
+            return ()=>val;
+        })(storedLyricSwappedAtom);
 
         if (storedLyricFontFamilyAtom) {
             const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/"/g, '');
@@ -209,9 +219,9 @@ div[class*="_lyricMainLine"]${storedAmllAnyLangAtom ? '' : ':has(+ div[class*="_
             }
             styleElement.id = 'ts_fonts';  // 设置 id
             styleElement.innerHTML = `
-div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
+div[class*="` + (getSwapped() ? `_lyricSubLine` : `_lyricMainLine`) + `"] + div[class*="_lyricSubLine"] {
     ${storedAmllTsFonts ? `font-family: ${storedAmllTsFonts}, sans-serif !important;` : ""}
-    ${storedAmllTsSize ? `font-size: ${storedAmllTsSize} !important;` : ""}
+    ${storedAmllTsSize ? `--amll-lp-secondary-font-size: ${storedAmllTsSize} !important;` : ""}
 }
             `;
         }
@@ -232,9 +242,9 @@ div[class*="_lyricMainLine"] + div[class*="_lyricSubLine"] {
             }
             styleElement.id = 'roma_fonts';  // 设置 id
             styleElement.innerHTML = `
-div[class*="_lyricSubLine"] + div[class*="_lyricSubLine"] {
+div[class*="` + (getSwapped() ? `_lyricMainLine` : `_lyricSubLine`) + `"] + div[class*="_lyricSubLine"] {
     ${storedAmllRomaFonts ? `font-family: ${storedAmllRomaFonts}, sans-serif !important;` : ""}
-    ${storedAmllRomaSize ? `font-size: ${storedAmllRomaSize} !important;` : ""}
+    ${storedAmllRomaSize ? `--amll-lp-secondary-font-size: ${storedAmllRomaSize} !important;` : ""}
 }
             `;
         }
