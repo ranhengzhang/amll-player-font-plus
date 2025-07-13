@@ -157,9 +157,12 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
         }
 
         const storedAmllBgSizeAtom = localStorage.getItem('amllBgSizeAtom');
+        const storedAmllBgScaleAtom = localStorage.getItem('amllBgScaleAtom');
         consoleLog("INFO", "context", "storedAmllBgSizeAtom: " + storedAmllBgSizeAtom);
-        if (storedAmllBgSizeAtom) {
+        consoleLog("INFO", "context", "storedAmllBgScaleAtom: " + storedAmllBgScaleAtom);
+        if (storedAmllBgSizeAtom || storedAmllBgScaleAtom) {
             const storedAmllBgSize = storedAmllBgSizeAtom?.replace(/"/g, '');
+            const storedAmllBgScale = parseInt(storedAmllBgSizeAtom);
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('bg_size');
             if (!styleElement) {
@@ -169,10 +172,13 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
             }
             styleElement.id = 'bg_size';  // 设置 id
             styleElement.innerHTML = `
-div.amll-lyric-player > div[class*="_lyricBgLine"] > div {
+${storedAmllBgSize?`div.amll-lyric-player > div[class*="_lyricBgLine"] > div {
     font-size: ${storedAmllBgSize} !important;
+}`:``}
+${storedAmllBgScale>0?`div.amll-lyric-player > div[class*="_lyricBgLine"] > div:not(:first-child) {
+    font-size: ${storedAmllBgScale}em !important;
 }
-`;
+`:``}`;
         }
 
         const storedAmllOrigFontsAtom = localStorage.getItem('amllOrigFontsAtom');

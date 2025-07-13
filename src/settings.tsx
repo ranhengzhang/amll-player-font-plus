@@ -39,6 +39,7 @@ export const SettingPage: FC = () => {
     const [amllMetaMod, setAmllMetaMod] = useAtom(amllMetaModAtom);
     const [amllOrigSize, setAmllOrigSize] = useAtom(amllOrigSizeAtom);
     const [amllBgSize, setAmllBgSize] = useAtom(amllBgSizeAtom);
+    const [amllBgScale, setAmllBgScale] = useAtom(amllBgScaleAtom);
     const [amllOrigHeight, setAmllOrigHeight] = useAtom(amllOrigHeightAtom);
     const [amllOrigFonts, setAmllOrigFonts] = useAtom(amllOrigFontsAtom);
     const [amllSpaceWidth, setAmllSpaceWidth] = useAtom(amllSpaceWidthAtom);
@@ -182,16 +183,18 @@ div.amll-lyric-player > div[class*="_lyricLine"]:empty + div[class*="_lyricLine"
     })();
 
     let bg_timeout = null;
-    let setAmllBgSizeFunc = (() => {
-        return (size: string) => {
-            setAmllBgSize(size);
-
+    let [setAmllBgSizeFunc, setAmllBgScaleFunc] = (() => {
+        let bg_size = amllBgSize;
+        let bg_scale = amllBgScale;
+        const reg = /\d+(\.\d*)?/
+        let set_bg = (log: () => void) => {
             if (bg_timeout) clearTimeout(bg_timeout);
+
             bg_timeout = setTimeout(() => {
-                consoleLog("INFO", "context", "AmllBgSizeAtom: " + size);
-                if (size) {
-                    // 创建一个 <style> 标签，并为其设置 id
-                    let styleElement = document.getElementById('bg_size');
+                log();
+                // 创建一个 <style> 标签，并为其设置 id
+                let styleElement = document.getElementById('bg_size');
+                if (bg_size || bg_scale) {
                     if (!styleElement) {
                         styleElement = document.createElement('style');
                         // 将 <style> 标签添加到 head 中
@@ -199,16 +202,29 @@ div.amll-lyric-player > div[class*="_lyricLine"]:empty + div[class*="_lyricLine"
                     }
                     styleElement.id = 'bg_size';  // 设置 id
                     styleElement.innerHTML = `
-div.amll-lyric-player > div[class*="_lyricBgLine"] > div {
-    font-size: ${size} !important;
+${bg_size?`div.amll-lyric-player > div[class*="_lyricBgLine"] > div {
+    font-size: ${bg_size} !important;
+}`:``}
+${Number(bg_scale)>0?`div.amll-lyric-player > div[class*="_lyricBgLine"] > div:not(:first-child) {
+    font-size: ${bg_scale}em !important;
 }
-`;
+`:``}`;
                 } else {
                     let styleElement = document.getElementById('bg_size');
                     if (styleElement) document.head.removeChild(styleElement);
                 }
             }, 800)
-        };
+        }
+        return [(size: string) => {
+            setAmllBgSize(size);
+            bg_size = size;
+            set_bg(()=>consoleLog("INFO", "context", "AmllBgSizeAtom: " + size));
+        }, (scale: string) => {
+            if (!reg.test(scale)) return;
+            setAmllBgScale(scale);
+            bg_scale = scale;
+            set_bg(()=>consoleLog("INFO", "context", "AmllBgScaleAtom: " + scale));
+        }]
     })();
 
     function setAmllOrigHeightFunc(fix: boolean) {
@@ -495,6 +511,17 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (am
                     />
                 </Flex>
             </Flex>
+            <Flex direction="row" align="center" gap="4" my="2">
+                <Flex direction="column" flexGrow="1">
+                    <Text as="div">背景行翻/音译行缩放（默认1）</Text>
+                </Flex>
+                <Flex direction="column" width="60%">
+                    <TextField.Root
+                        value={amllBgScale}
+                        onChange={(e) => setAmllBgScaleFunc(e.currentTarget.value)}
+                    />
+                </Flex>
+            </Flex>
             <Separator my="3" size="4"/>
             <Flex direction="row" align="center" gap="4" my="2">
                 <Flex direction="column" flexGrow="1">
@@ -606,6 +633,11 @@ export const amllOrigSizeAtom = atomWithStorage(
 export const amllBgSizeAtom = atomWithStorage(
     "amllBgSizeAtom",
     "",
+)
+
+export const amllBgScaleAtom = atomWithStorage(
+    "amllBgScaleAtom",
+    "1",
 )
 
 export const amllOrigHeightAtom = atomWithStorage(
