@@ -134,6 +134,10 @@ div.amll-lyric-player > div[class^="_lyricLine"]:empty + div[class^="_lyricLine"
 div[class*="_lyricMainLine"] span[style^="mask-image"] {
     min-height: 1.25em !important;
 }
+
+div[class*="_lyricMainLine"] div[class*="_romanWord"] {
+   line-height: 1.25em !important;
+}
             `
         }
 
@@ -162,7 +166,7 @@ div[class*="_lyricMainLine"] span[style^="mask-image"] {
         consoleLog("INFO", "context", "storedAmllBgScaleAtom: " + storedAmllBgScaleAtom);
         if (storedAmllBgSizeAtom || storedAmllBgScaleAtom) {
             const storedAmllBgSize = storedAmllBgSizeAtom?.replace(/"/g, '');
-            const storedAmllBgScale = parseInt(storedAmllBgSizeAtom);
+            const storedAmllBgScale = parseFloat(storedAmllBgScaleAtom?.replace(/"/g, ''));
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('bg_size');
             if (!styleElement) {
@@ -222,7 +226,7 @@ div[class*="_lyricMainLine"]${storedAmllAnyLangAtom ? '' : ':has(+ div[class*="_
             }
             styleElement.id = 'ts_fonts';  // 设置 id
             styleElement.innerHTML = `
-div[class*="_lyricLine"] > div:nth-child(` + (getSwapped() ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"] > div[class*="_lyricSubLine"]:nth-child(${getSwapped() ? 3 : 2}) {
     font-family: ${storedAmllTsFonts}, sans-serif !important;
 }
             `;
@@ -241,7 +245,7 @@ div[class*="_lyricLine"] > div:nth-child(` + (getSwapped() ? 2 : 1) + ` of div[c
             }
             styleElement.id = 'ts_size';  // 设置 id
             styleElement.innerHTML = `
-div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (getSwapped() ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div[class*="_lyricSubLine"]:nth-child(${getSwapped() ? 3 : 2}) {
     ${storedAmllTsSize ? `--amll-lp-secondary-font-size: ${storedAmllTsSize} !important;` : ""}
 }
             `;
@@ -260,8 +264,12 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (ge
             }
             styleElement.id = 'roma_fonts';  // 设置 id
             styleElement.innerHTML = `
-div[class*="_lyricLine"] > div:nth-child(` + (getSwapped() ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"] > div[class*="_lyricSubLine"]:nth-child(${getSwapped() ? 2 : 3}) {
     ${storedAmllRomaFonts ? `font-family: ${storedAmllRomaFonts}, sans-serif !important;` : ""}
+}
+
+div[class*="_lyricMainLine"] div[class*="_romanWord"] {
+   ${storedAmllRomaFonts ? `font-family: ${storedAmllRomaFonts}, sans-serif !important;` : ""}
 }
             `;
         }
@@ -279,7 +287,7 @@ div[class*="_lyricLine"] > div:nth-child(` + (getSwapped() ? 1 : 2) + ` of div[c
             }
             styleElement.id = 'roma_size';  // 设置 id
             styleElement.innerHTML = `
-div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (getSwapped() ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div[class*="_lyricSubLine"]:nth-child(${getSwapped() ? 2 : 3}) {
     --amll-lp-secondary-font-size: ${storedAmllRomaSize} !important;
 }
             `;

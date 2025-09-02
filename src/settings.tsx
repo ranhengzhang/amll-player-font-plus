@@ -243,6 +243,10 @@ ${Number(bg_scale)>0?`div.amll-lyric-player > div[class*="_lyricBgLine"] > div:n
 div[class*="_lyricMainLine"] span[style^="mask-image"] {
     min-height: 1.25em !important;
 }
+
+div[class*="_lyricMainLine"] div[class*="_romanWord"] {
+   line-height: 1.25em !important;
+}
 `;
             consoleLog("LOG", "orig", "原文行高修复开启。");
         } else {
@@ -319,7 +323,7 @@ div[class*="_lyricMainLine"]${any_lang ? '' : ':has(+ div[class*="_lyricSubLine"
                 }
                 styleElement.id = 'ts_fonts';  // 设置 id
                 styleElement.innerHTML = `
-div[class*="_lyricLine"] > div:nth-child(` + (amllSwapped ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"] > div[class*="_lyricSubLine"]:nth-child(${amllSwapped ? 3 : 2}) {
     font-family: ${family}, sans-serif !important;
 }
 `;
@@ -347,7 +351,7 @@ div[class*="_lyricLine"] > div:nth-child(` + (amllSwapped ? 2 : 1) + ` of div[cl
                 }
                 styleElement.id = 'ts_size';  // 设置 id
                 styleElement.innerHTML = `
-div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (amllSwapped ? 2 : 1) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div[class*="_lyricSubLine"]:nth-child(${amllSwapped ? 3 : 2}) {
     --amll-lp-secondary-font-size: ${size} !important;
 }
 `;
@@ -375,8 +379,12 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (am
                 }
                 styleElement.id = 'roma_fonts';  // 设置 id
                 styleElement.innerHTML = `
-div[class*="_lyricLine"] > div:nth-child(` + (amllSwapped ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"] > div[class*="_lyricSubLine"]:nth-child(${amllSwapped ? 2 : 3}) {
     font-family: ${family}, sans-serif !important;
+}
+
+div[class*="_lyricMainLine"] div[class*="_romanWord"] {
+   font-family: ${family}, sans-serif !important;
 }
 `;
             } else {
@@ -403,7 +411,7 @@ div[class*="_lyricLine"] > div:nth-child(` + (amllSwapped ? 1 : 2) + ` of div[cl
                 }
                 styleElement.id = 'roma_size';  // 设置 id
                 styleElement.innerHTML = `
-div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div:nth-child(` + (amllSwapped ? 1 : 2) + ` of div[class*="_lyricSubLine"]) {
+div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div[class*="_lyricSubLine"]:nth-child(${amllSwapped ? 2 : 3}) {
     --amll-lp-secondary-font-size: ${size} !important;
 }
 `;
