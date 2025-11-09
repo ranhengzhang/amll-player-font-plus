@@ -12,7 +12,7 @@ export const ExtensionContext: FC = () => {
         const getSwapped = ((storedLyricSwappedAtom: string)=>{
             let val = false;
             if (storedLyricSwappedAtom) {
-                const storedLyricSwapped = storedLyricSwappedAtom?.replace(/"/g, '');
+                const storedLyricSwapped = storedLyricSwappedAtom?.replace(/^"/g, '').replace(/"$/g, '');
                 val = storedLyricSwapped !== "false";
             }
             consoleLog("LOG", "font", "swapped: " + (storedLyricSwappedAtom??val));
@@ -20,7 +20,7 @@ export const ExtensionContext: FC = () => {
         })(storedLyricSwappedAtom);
 
         if (storedLyricFontFamilyAtom) {
-            const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/"/g, '');
+            const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('fix_fonts');
             if (!styleElement) {
@@ -70,8 +70,8 @@ div[class^="_info"] > div[class*="_name"] {
         consoleLog("INFO", "context", "storedAmllInfoFontsAtom: " + storedAmllInfoFontsAtom);
         consoleLog("INFO", "context", "storedAmllInfoSizeAtom: " + storedAmllInfoSizeAtom);
         if (storedAmllInfoFontsAtom || storedAmllInfoSizeAtom) {
-            const storedAmllInfoFonts = storedAmllInfoFontsAtom?.replace(/"/g, '');
-            const storedAmllInfoSize = storedAmllInfoSizeAtom?.replace(/"/g, '');
+            const storedAmllInfoFonts = storedAmllInfoFontsAtom?.replace(/^"/g, '').replace(/"$/g, '');
+            const storedAmllInfoSize = storedAmllInfoSizeAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('info_fonts');
             if (!styleElement) {
@@ -92,7 +92,7 @@ div[class^="_musicInfo"] > div[class^="_info"] {
         consoleLog("INFO", "context", "storedAmllMetaModAtom: " + storedAmllMetaModAtom);
         if (storedAmllMetaModAtom) {
             if (storedLyricFontFamilyAtom) {
-                const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/"/g, '');
+                const storedLyricFontFamily = storedLyricFontFamilyAtom?.replace(/^"/g, '').replace(/"$/g, '');
                 // 创建一个 <style> 标签，并为其设置 id
                 let styleElement = document.getElementById('meta_fonts');
                 if (!styleElement) {
@@ -144,7 +144,7 @@ div[class*="_lyricMainLine"] div[class*="_romanWord"] {
         const storedAmllOrigSizeAtom = localStorage.getItem('amllOrigSizeAtom');
         consoleLog("INFO", "context", "storedAmllOrigSizeAtom: " + storedAmllOrigSizeAtom);
         if (storedAmllOrigSizeAtom) {
-            const storedAmllOrigSize = storedAmllOrigSizeAtom?.replace(/"/g, '');
+            const storedAmllOrigSize = storedAmllOrigSizeAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('orig_size');
             if (!styleElement) {
@@ -165,8 +165,8 @@ div[class*="_lyricMainLine"] div[class*="_romanWord"] {
         consoleLog("INFO", "context", "storedAmllBgSizeAtom: " + storedAmllBgSizeAtom);
         consoleLog("INFO", "context", "storedAmllBgScaleAtom: " + storedAmllBgScaleAtom);
         if (storedAmllBgSizeAtom || storedAmllBgScaleAtom) {
-            const storedAmllBgSize = storedAmllBgSizeAtom?.replace(/"/g, '');
-            const storedAmllBgScale = parseFloat(storedAmllBgScaleAtom?.replace(/"/g, ''));
+            const storedAmllBgSize = storedAmllBgSizeAtom?.replace(/^"/g, '').replace(/"$/g, '');
+            const storedAmllBgScale = parseFloat(storedAmllBgScaleAtom?.replace(/^"/g, '').replace(/"$/g, ''));
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('bg_size');
             if (!styleElement) {
@@ -192,8 +192,8 @@ ${storedAmllBgScale>0?`div.amll-lyric-player > div[class*="_lyricBgLine"] > div:
         consoleLog("INFO", "context", "storedAmllSpaceWidthAtom: " + storedAmllSpaceWidthAtom);
         consoleLog("INFO", "context", "storedAmllAnyLangAtom: " + storedAmllAnyLangAtom);
         if (storedAmllOrigFontsAtom || storedAmllSpaceWidthAtom) {
-            const storedAmllOrigFonts = storedAmllOrigFontsAtom?.replace(/"/g, '');
-            const storedAmllSpaceWidth = storedAmllSpaceWidthAtom?.replace(/"/g, '');
+            const storedAmllOrigFonts = storedAmllOrigFontsAtom?.replace(/^"/g, '').replace(/"$/g, '');
+            const storedAmllSpaceWidth = storedAmllSpaceWidthAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('orig_fonts');
             if (!styleElement) {
@@ -216,7 +216,7 @@ div[class*="_lyricMainLine"]${storedAmllAnyLangAtom ? '' : ':has(+ div[class*="_
         const storedAmllTsFontsAtom = localStorage.getItem('amllTsFontsAtom');
         consoleLog("INFO", "context", "storedAmllTsFontsAtom: " + storedAmllTsFontsAtom);
         if (storedAmllTsFontsAtom) {
-            const storedAmllTsFonts = storedAmllTsFontsAtom?.replace(/"/g, '');
+            const storedAmllTsFonts = storedAmllTsFontsAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('ts_fonts');
             if (!styleElement) {
@@ -235,7 +235,7 @@ div[class*="_lyricLine"] > div[class*="_lyricSubLine"]:nth-child(${getSwapped() 
         const storedAmllTsSizeAtom = localStorage.getItem('amllTsSizeAtom');
         consoleLog("INFO", "context", "storedAmllTsSizeAtom: " + storedAmllTsSizeAtom);
         if (storedAmllTsSizeAtom) {
-            const storedAmllTsSize = storedAmllTsSizeAtom?.replace(/"/g, '');
+            const storedAmllTsSize = storedAmllTsSizeAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('ts_size');
             if (!styleElement) {
@@ -254,7 +254,7 @@ div[class*="_lyricLine"]:not(div[class*="_lyricBgLine"]) > div[class*="_lyricSub
         const storedAmllRomaFontsAtom = localStorage.getItem('amllRomaFontsAtom');
         consoleLog("INFO", "context", "storedAmllRomaFontsAtom: " + storedAmllRomaFontsAtom);
         if (storedAmllRomaFontsAtom) {
-            const storedAmllRomaFonts = storedAmllRomaFontsAtom?.replace(/"/g, '');
+            const storedAmllRomaFonts = storedAmllRomaFontsAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('roma_fonts');
             if (!styleElement) {
@@ -277,7 +277,7 @@ div[class*="_lyricMainLine"] div[class*="_romanWord"] {
         const storedAmllRomaSizeAtom = localStorage.getItem('amllRomaSizeAtom');
         consoleLog("INFO", "context", "storedAmllRomaSizeAtom: " + storedAmllRomaSizeAtom);
         if (storedAmllRomaSizeAtom) {
-            const storedAmllRomaSize = storedAmllRomaSizeAtom?.replace(/"/g, '');
+            const storedAmllRomaSize = storedAmllRomaSizeAtom?.replace(/^"/g, '').replace(/"$/g, '');
             // 创建一个 <style> 标签，并为其设置 id
             let styleElement = document.getElementById('roma_size');
             if (!styleElement) {
